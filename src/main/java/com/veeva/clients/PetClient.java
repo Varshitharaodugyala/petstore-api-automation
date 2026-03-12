@@ -11,4 +11,19 @@ public class PetClient extends BaseClient {
                 .when()
                 .get("/pet/{petId}");
     }
+
+    public Response createPet(int id, String name, String status) {
+
+        String body = "{\n" +
+                "\"id\": " + id + ",\n" +
+                "\"name\": \"" + name + "\",\n" +
+                "\"status\": \"" + status + "\"\n" +
+                "}";
+
+        return request()
+                .body(body)
+                .when()
+                .post("/pet");
+    }
+
 }
