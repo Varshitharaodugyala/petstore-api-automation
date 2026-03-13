@@ -21,24 +21,11 @@ public class PetSteps {
 
         response = petClient.createPet(petId, name, status);
 
-        // Extract ID from response
         petId = response.jsonPath().getInt("id");
-    }
-
-    @Given("a pet exists with id {int}")
-    public void a_pet_exists_with_id(Integer id) {
-
-        petId = id;
     }
 
     @When("I fetch the created pet")
     public void i_fetch_the_created_pet() {
-
-        response = petClient.getPetById(petId);
-    }
-
-    @When("I send a GET request to fetch the pet")
-    public void i_send_a_get_request_to_fetch_the_pet() {
 
         response = petClient.getPetById(petId);
     }
@@ -77,5 +64,17 @@ public class PetSteps {
     public void the_response_status_code_should_be(int statusCode) {
 
         assertEquals(statusCode, response.getStatusCode());
+    }
+
+    @Given("a pet does not exist with id {int}")
+    public void a_pet_does_not_exist_with_id(Integer id) {
+
+        petId = id;
+    }
+
+    @When("I send a GET request to fetch the pet")
+    public void i_send_a_get_request_to_fetch_the_pet() {
+
+        response = petClient.getPetById(petId);
     }
 }

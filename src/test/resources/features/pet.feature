@@ -7,7 +7,7 @@ Scenario: Create and fetch a pet
 
 
 Scenario: Fetch pet with invalid ID
-  Given a pet exists with id 999999
+  Given a pet does not exist with id 999999999
   When I send a GET request to fetch the pet
   Then the response status code should be 404
 

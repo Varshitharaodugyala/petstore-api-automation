@@ -47,4 +47,11 @@ public class PetClient extends BaseClient {
                 .when()
                 .delete("/pet/{petId}");
     }
+    public Response findPetsByStatus(String status) {
+
+        return request()
+                .queryParam("status", status)
+                .when()
+                .get("/pet/findByStatus");
+    }
 }
