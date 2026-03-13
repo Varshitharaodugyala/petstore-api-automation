@@ -1,7 +1,6 @@
-Feature: Inventory Analysis
+Feature: Store Inventory Validation
 
-Scenario: Verify available pet count from inventory
-
+Scenario: Validate available pets count with inventory
   When I fetch the store inventory
   Then the inventory response status should be 200
   And the inventory should contain available pets count
