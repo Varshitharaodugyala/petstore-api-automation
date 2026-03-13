@@ -2,6 +2,8 @@ package com.veeva.stepdefinitions;
 
 import com.veeva.clients.PetClient;
 import io.cucumber.java.en.*;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -69,5 +71,22 @@ public class PetSteps {
 
         CommonSteps.response =
                 petClient.getPetById(petId);
+    }
+    @Then("all pets should have status {string}")
+    public void all_pets_should_have_status(String expectedStatus) {
+
+        List<Map<String, Object>> pets =
+                CommonSteps.response.jsonPath().getList("$");
+
+        for (Map<String, Object> pet : pets) {
+
+            assertEquals(expectedStatus, pet.get("status"));
+        }
+    }
+    @When("I fetch pets with status {string}")
+    public void i_fetch_pets_with_status(String status) {
+
+        CommonSteps.response =
+                petClient.findPetsByStatus(status);
     }
 }

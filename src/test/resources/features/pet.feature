@@ -27,3 +27,8 @@ Scenario: Pet lifecycle
 
   When I fetch the deleted pet
   Then the response status code should be 404
+Scenario: Verify pets can be filtered by status
+  When I fetch pets with status "available"
+  Then the response status code should be 200
+  And all pets should have status "available"
+
