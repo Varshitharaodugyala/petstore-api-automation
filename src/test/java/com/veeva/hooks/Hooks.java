@@ -28,4 +28,3 @@ public class Hooks {
                 scenario.getName(), scenario.getStatus());
     }
 }
-
