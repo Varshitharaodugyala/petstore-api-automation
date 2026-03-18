@@ -1,18 +1,19 @@
 package com.veeva.clients;
-import io.restassured.http.ContentType;
-import com.veeva.config.ConfigManager;
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 
-import static io.restassured.RestAssured.given;
+import com.veeva.config.ConfigManager;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 
 public class BaseClient {
 
-    protected RequestSpecification request() {
-        return RestAssured
-                .given()
-                .baseUri(ConfigManager.getBaseUrl())
-                .contentType(ContentType.JSON)
-                .log().all();   // logs request details
-    }
+    protected static final RequestSpecification requestSpec =
+            new RequestSpecBuilder()
+                    .setBaseUri(ConfigManager.getBaseUrl())
+                    .setContentType(ContentType.JSON)
+                    .addFilter(new RequestLoggingFilter())
+                    .addFilter(new ResponseLoggingFilter())
+                    .build();
 }
