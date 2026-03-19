@@ -30,7 +30,7 @@ public class PetSteps {
 
     @Given("I create a pet with name {string} and status {string}")
     public void i_create_a_pet(String name, String status) {
-        long id = (long)(Math.random() * 100000);
+        long id = System.currentTimeMillis();
         Response response = petClient.createPet(id, name, status);
         ctx.set("petId", response.jsonPath().getLong("id"));
         ctx.set("petName", name);
@@ -40,7 +40,7 @@ public class PetSteps {
 
     @Given("I create a new pet with name {string} category {string} and status {string}")
     public void i_create_pet_with_category(String name, String category, String status) {
-        long id = (long)(Math.random() * 100000);
+        long id = System.currentTimeMillis();
         Response response = petClient.createPetWithCategory(id, name, status, category);
         ctx.set("petId", response.jsonPath().getLong("id"));
         ctx.set("petName", name);
