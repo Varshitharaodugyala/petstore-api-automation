@@ -75,13 +75,20 @@ public class InventorySteps {
         log.info("Inventory count: {} | findByStatus count: {}",
                 inventoryCount, findByStatusCount);
 
-        // approximately match within 50 — petstore is a public shared API
-        // so counts may differ slightly between the two calls
         int diff = Math.abs(inventoryCount - findByStatusCount);
+
+        // use percentage-based tolerance (20%) since petstore is a shared
+        // public API and counts can shift between the two sequential calls
+        // but a flat 50 tolerance is too loose to be meaningful
+        double tolerance = inventoryCount > 0 ? inventoryCount * 0.20 : 10;
+
+        log.info("Diff: {} | Allowed tolerance (20%): {}", diff, tolerance);
+
         assertTrue(
                 "Available count from /store/inventory (" + inventoryCount +
-                        ") should approximately match /pet/findByStatus (" + findByStatusCount + ")",
-                diff <= 50);
+                        ") should be within 20% of /pet/findByStatus (" + findByStatusCount + ")" +
+                        " — actual diff: " + diff + ", allowed: " + (int) tolerance,
+                diff <= tolerance);
     }
 
     @Then("the available pet counts should match")
