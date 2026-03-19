@@ -100,6 +100,10 @@ public class PetSteps {
 
     @When("I update the pet status from {string} to {string}")
     public void i_update_pet_status_from_to(String from, String to) {
+        Response current = petClient.getPetById(ctx.getLong("petId"));
+        assertEquals("Pet should currently have status " + from,
+                from, current.jsonPath().getString("status"));
+        log.info("Verified current status is '{}', now updating to '{}'", from, to);
         i_update_the_pet_status(to);
     }
 
