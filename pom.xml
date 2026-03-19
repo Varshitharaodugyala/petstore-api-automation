@@ -66,11 +66,17 @@
             <version>1.0.2</version>
         </dependency>
 
-        <!-- ADDED: enables dependency injection between step def classes -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-picocontainer</artifactId>
             <version>7.15.0</version>
+        </dependency>
+
+        <!-- Required by maven-cucumber-reporting plugin -->
+        <dependency>
+            <groupId>net.masterthought</groupId>
+            <artifactId>cucumber-reporting</artifactId>
+            <version>5.7.4</version>
         </dependency>
 
     </dependencies>
@@ -78,7 +84,6 @@
     <build>
         <plugins>
 
-            <!-- ADDED: makes mvn clean test work by pointing to TestRunner -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -90,7 +95,6 @@
                 </configuration>
             </plugin>
 
-            <!-- ADDED: generates rich HTML report in target/cucumber-html-reports/ -->
             <plugin>
                 <groupId>net.masterthought</groupId>
                 <artifactId>maven-cucumber-reporting</artifactId>
@@ -105,8 +109,9 @@
                         <configuration>
                             <projectName>Petstore API Automation</projectName>
                             <outputDirectory>${project.build.directory}/cucumber-html-reports</outputDirectory>
+                            <inputDirectory>${project.build.directory}</inputDirectory>
                             <jsonFiles>
-                                <param>${project.build.directory}/cucumber.json</param>
+                                <param>cucumber.json</param>
                             </jsonFiles>
                         </configuration>
                     </execution>

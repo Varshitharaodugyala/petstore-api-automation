@@ -41,7 +41,7 @@ public class NegativePetSteps {
     @Given("I try to create a pet with name {string} and status {string}")
     public void i_try_to_create_pet_invalid(String name, String status) {
         Response r = petClient.createPet(
-                (long)(Math.random() * 100000), name, status);
+                System.currentTimeMillis(), name, status);
         ctx.set("lastResponse", r);
     }
 }

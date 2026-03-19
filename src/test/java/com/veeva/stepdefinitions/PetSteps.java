@@ -72,10 +72,14 @@ public class PetSteps {
 
     @When("I send a GET request to fetch the pet")
     public void i_send_get_request_to_fetch_the_pet() {
-        Response r = petClient.getPetById(ctx.getLong("petId"));
+        long id = ctx.get("petId") != null
+                ? ctx.getLong("petId")
+                : ctx.getLong("nonExistentPetId");
+        Response r = petClient.getPetById(id);
         ctx.set("getResponse", r);
+        ctx.set("lastResponse", r);
+        log.info("GET pet by id: {} returned status: {}", id, r.getStatusCode());
     }
-
     @Then("the pet name should be {string}")
     public void the_pet_name_should_be(String name) {
         Response r = (Response) ctx.get("getResponse");
