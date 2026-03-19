@@ -23,7 +23,7 @@ public class UserSteps {
     @When("I create a user with username {string} and email {string}")
     public void i_create_user(String username, String email) {
         User user = new User();
-        user.setId(12345L);
+        user.setId(System.currentTimeMillis());
         user.setUsername(username);
         user.setFirstName("Test");
         user.setLastName("User");
@@ -31,17 +31,20 @@ public class UserSteps {
         user.setPassword("password123");
         user.setPhone("9999999999");
         user.setUserStatus(1);
-
         Response r = userClient.createUser(user);
         ctx.set("lastResponse", r);
         ctx.set("userCreateResponse", r);
-        log.info("User create response: {}", r.getStatusCode());
+        log.info("User create response code: {} for email: {}", r.getStatusCode(), email);
     }
 
     @Then("the user creation response should not return a server error")
     public void user_creation_not_server_error() {
         Response r = (Response) ctx.get("userCreateResponse");
-        assertNotEquals("Should not return 500", 500, r.getStatusCode());
+        int statusCode = r.getStatusCode();
+        log.info("User creation returned status: {}", statusCode);
+        assertNotEquals("Should not return 500 server error", 500, statusCode);
+        assertTrue("Status code should be 2xx or 4xx, not a server error",
+                statusCode < 500);
     }
 
     @When("I request a user with username {string}")
@@ -49,14 +52,24 @@ public class UserSteps {
         Response r = userClient.getUserByUsername(username);
         ctx.set("lastResponse", r);
         ctx.set("getUserResponse", r);
+        log.info("Get user '{}' returned status: {}", username, r.getStatusCode());
     }
 
     @Then("the response message should contain {string}")
     public void response_message_should_contain(String expected) {
         Response r = (Response) ctx.get("getUserResponse");
         String message = r.jsonPath().getString("message");
-        assertTrue("Message should contain: " + expected,
+        assertTrue("Response message should contain: " + expected,
                 message != null && message.contains(expected));
+    }
+
+    @Then("the user response status should be {int}")
+    public void the_user_response_status_should_be(int expectedCode) {
+        Response r = (Response) ctx.get("getUserResponse");
+        assertNotNull("Get user response should not be null", r);
+        assertEquals("Get user response status code should be " + expectedCode,
+                expectedCode, r.getStatusCode());
+        log.info("Verified user response status is {}", expectedCode);
     }
 
     @When("I login with username {string} and password {string}")
@@ -64,16 +77,24 @@ public class UserSteps {
         Response r = userClient.login(username, password);
         ctx.set("lastResponse", r);
         ctx.set("loginResponse", r);
-        log.info("Login response: {}", r.getStatusCode());
+        log.info("Login attempt with username '{}' returned status: {}", username, r.getStatusCode());
     }
 
     @Then("the login response should not contain a valid session token")
     public void login_should_not_have_token() {
         Response r = (Response) ctx.get("loginResponse");
-        boolean noToken = r.getStatusCode() != 200
-                || !r.getBody().asString().contains("logged in user session");
-        assertTrue("Invalid login should not return a session token", noToken);
+        int statusCode = r.getStatusCode();
+        String body = r.getBody().asString();
+        log.info("Login response status: {}, body: {}", statusCode, body);
+
+        if (statusCode == 200) {
+            assertFalse(
+                    "Invalid credentials should not return a session token in body",
+                    body.contains("logged in user session"));
+        } else {
+            assertTrue(
+                    "Invalid login should return 4xx status, got: " + statusCode,
+                    statusCode >= 400 && statusCode < 500);
+        }
     }
 }
-
-
