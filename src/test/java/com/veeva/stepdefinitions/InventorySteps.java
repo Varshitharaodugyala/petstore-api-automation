@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 
 import static org.junit.Assert.*;
-
+import com.veeva.clients.PetClient;
 public class InventorySteps {
 
     private static final Logger log = LogManager.getLogger(InventorySteps.class);
@@ -40,15 +40,10 @@ public class InventorySteps {
                 ctx.getInt("inventoryAvailableCount") >= 0);
     }
 
+    private final PetClient petClient = new PetClient();
+
     @When("I fetch pets with status available")
     public void i_fetch_pets_with_status_available() {
-        List<Pet> pets = storeClient
-                .getInventory()
-                .then().extract().jsonPath()
-                .getList(".", Pet.class);
-
-        // use PetClient to get the actual list by status
-        com.veeva.clients.PetClient petClient = new com.veeva.clients.PetClient();
         List<Pet> availablePets = petClient.findPetsByStatusAsList("available");
         ctx.set("petsByStatus", availablePets);
         log.info("Found {} available pets via findByStatus", availablePets.size());
