@@ -1,4 +1,3 @@
-@regression @tc2
 Feature: TC2 - Inventory Analysis (Complex Data Parsing)
 
   Scenario: Validate available pets count matches between inventory and findByStatus

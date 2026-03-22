@@ -1,4 +1,3 @@
-@regression @negative
 Feature: Negative Pet Scenarios
 
   Scenario: Fetch non-existing pet returns 404

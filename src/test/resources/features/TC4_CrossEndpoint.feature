@@ -1,4 +1,3 @@
-@regression @tc4
 Feature: TC4 - Cross-Endpoint Data Consistency
 
   Background:

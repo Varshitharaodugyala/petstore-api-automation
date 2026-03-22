@@ -1,4 +1,3 @@
-@regression @tc3 @negative
 Feature: TC3 - User Security and Error Handling (Negative Testing)
 
   Background:
@@ -12,6 +11,6 @@ Feature: TC3 - User Security and Error Handling (Negative Testing)
     When I request a user with username "nonExistentUser123"
     Then the response status code should be 404
 
-  Scenario: Login with incorrect credentials
+  Scenario: Login with incorrect credentials does not cause server error
     When I login with username "wrongUser" and password "wrongPass"
     Then the login response should not contain a valid session token

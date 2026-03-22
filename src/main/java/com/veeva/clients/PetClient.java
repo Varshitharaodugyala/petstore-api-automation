@@ -1,5 +1,11 @@
-package com.veeva.clients;
+/*
+      * PetClient class is responsible for handling all API requests related to Pet module.
+      * This includes creating a pet, updating a pet, deleting a pet,
+      * fetching pet details and searching pets based on status.
+      * This class extends BaseClient so that it can reuse common request configurations
 
+ */
+package com.veeva.clients;
 import com.veeva.models.Category;
 import com.veeva.models.Pet;
 import io.restassured.response.Response;
@@ -12,36 +18,64 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 
 public class PetClient extends BaseClient {
-
+    //Logger object used to print useful execution messages.
     private static final Logger log = LogManager.getLogger(PetClient.class);
-
+    /*
+     * This method sends a POST request to create a new pet in the system.
+     * Instead of manually building JSON string, we create a Pet Java object (POJO).
+     * REST Assured automatically converts this object into JSON (Serialization).
+     */
     public Response createPet(long id, String name, String status) {
+        // Creating Pet request object and setting required fields
         Pet pet = new Pet();
         pet.setId(id);
         pet.setName(name);
         pet.setStatus(status);
+        /*
+         * photoUrls is a mandatory field in Petstore API.
+         * So we are adding a single photo URL using Collections.singletonList.
+         */
         pet.setPhotoUrls(Collections.singletonList("https://example.com/photo.jpg"));
+        /*
+         * given() → start building request
+         * spec(requestSpec) → apply common configuration from BaseClient
+         * body(pet) → attach request body (Pet object converted to JSON)
+         * post("/pet") → send POST request to create pet
+         */
 
         log.info("Creating pet - id: {}, name: {}, status: {}", id, name, status);
         return given().spec(requestSpec).body(pet).when().post("/pet");
     }
+    /*
+     * This method creates a pet along with category information.
+     * Category is a nested object inside Pet request body.
 
+     */
     public Response createPetWithCategory(long id, String name, String status, String categoryName) {
         Pet pet = new Pet();
         pet.setId(id);
         pet.setName(name);
         pet.setStatus(status);
         pet.setPhotoUrls(Collections.singletonList("https://example.com/photo.jpg"));
+        // Creating Category object and setting it inside Pet .1L represents type long
         pet.setCategory(new Category(1L, categoryName));
 
         log.info("Creating pet with category - name: {}, category: {}", name, categoryName);
         return given().spec(requestSpec).body(pet).when().post("/pet");
     }
-
+    /*
+     * This method fetches pet details using petId.
+     * petId is passed as path parameter which replaces {petId} in endpoint URL.
+     */
     public Response getPetById(long petId) {
         log.info("Fetching pet by id: {}", petId);
         return given().spec(requestSpec).when().get("/pet/{petId}", petId);
     }
+    /*
+     * This method updates an existing pet.
+     * PUT request is used for updating resources in REST APIs.
+     * Entire pet object is sent again with modified values.
+     */
 
     public Response updatePet(long id, String name, String status) {
         Pet pet = new Pet();
@@ -53,19 +87,26 @@ public class PetClient extends BaseClient {
         log.info("Updating pet - id: {}, new status: {}", id, status);
         return given().spec(requestSpec).body(pet).when().put("/pet");
     }
-
+    /*
+     * This method deletes a pet using petId.
+     * DELETE request removes the resource from server.
+     */
     public Response deletePet(long petId) {
         log.info("Deleting pet id: {}", petId);
         return given().spec(requestSpec).when().delete("/pet/{petId}", petId);
     }
-
+    /*
+     * This method searches pets based on their status using query parameter.
+     * Example endpoint:
+     */
     public Response findPetsByStatus(String status) {
         log.info("Finding pets by status: {}", status);
         return given().spec(requestSpec)
                 .queryParam("status", status)
                 .when().get("/pet/findByStatus");
     }
-
+    //This is a helper method used for deserialization.
+    //It converts API response JSON array into List<Pet> Java objects.
     public List<Pet> findPetsByStatusAsList(String status) {
         return findPetsByStatus(status)
                 .then().extract().jsonPath().getList(".", Pet.class);
