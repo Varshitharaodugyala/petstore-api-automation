@@ -5,7 +5,7 @@
       * This class extends BaseClient so that it can reuse common request configurations
 
  */
-package com.veeva.clients;
+package com.veeva.pages;
 import com.veeva.models.Category;
 import com.veeva.models.Pet;
 import io.restassured.response.Response;
@@ -17,24 +17,18 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
-public class PetClient extends BaseClient {
-    //Logger object used to print useful execution messages.
-    private static final Logger log = LogManager.getLogger(PetClient.class);
+public class PetPage extends BasePage {
+    private static final Logger log = LogManager.getLogger(PetPage.class);
     /*
      * This method sends a POST request to create a new pet in the system.
      * Instead of manually building JSON string, we create a Pet Java object (POJO).
      * REST Assured automatically converts this object into JSON (Serialization).
      */
     public Response createPet(long id, String name, String status) {
-        // Creating Pet request object and setting required fields
         Pet pet = new Pet();
         pet.setId(id);
         pet.setName(name);
         pet.setStatus(status);
-        /*
-         * photoUrls is a mandatory field in Petstore API.
-         * So we are adding a single photo URL using Collections.singletonList.
-         */
         pet.setPhotoUrls(Collections.singletonList("https://example.com/photo.jpg"));
         /*
          * given() → start building request
@@ -110,5 +104,20 @@ public class PetClient extends BaseClient {
     public List<Pet> findPetsByStatusAsList(String status) {
         return findPetsByStatus(status)
                 .then().extract().jsonPath().getList(".", Pet.class);
+    }
+    public Response getPetByInvalidId(String id) {
+        return given()
+                .spec(requestSpec)
+                .pathParam("petId", id)
+                .when()
+                .get("/pet/{petId}");
+    }
+
+    public Response deletePetByInvalidId(String id) {
+        return given()
+                .spec(requestSpec)
+                .pathParam("petId", id)
+                .when()
+                .delete("/pet/{petId}");
     }
 }

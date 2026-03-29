@@ -1,35 +1,43 @@
 Feature: TC3 - User Security and Error Handling (Negative Testing)
 
-  # Background runs before every scenario
-  # Ensures API base configuration / readiness
   Background:
     Given the petstore API is available
 
-  # Scenario 1 → Invalid Input Testing
-  Scenario: Create user with invalid email format
+  Scenario Outline: Create user with invalid email format
 
-    # Try creating user with wrong email format
-    When I create a user with username "testuser123" and email "invalid_email"
-
-    # Validate API does NOT crash (no 500 error)
+    When I create a user with username "<username>" and email "<email>"
     Then the user creation response should not return a server error
 
-
-  # Scenario 2 → Resource Not Found Testing
-  Scenario: Fetch a non-existent user returns 404
-
-    # Try fetching user which does not exist
-    When I request a user with username "nonExistentUser123"
-
-    # Validate proper error status returned
-    Then the response status code should be 404
+    Examples:
+      | username   | email            |
+      | testuser1  | invalid_email    |
+      | testuser2  | abc              |
+      | testuser3  | user@            |
+      | testuser4  | @gmail.com       |
 
 
-  # Scenario 3 → Authentication Negative Testing
-  Scenario: Login with incorrect credentials does not cause server error
+  Scenario Outline: Fetch a non-existent user returns 404
 
-    # Try login with invalid username/password
-    When I login with username "wrongUser" and password "wrongPass"
 
-    # Validate API handled failure gracefully
+    When I request a user with username "<username>"
+    Then the user response status should be 404
+    And the response message should contain "User not found"
+
+    Examples:
+      | username             |
+      | nonExistentUser123   |
+      | randomUser999        |
+      | unknown_user         |
+
+
+  Scenario Outline: Login with incorrect credentials
+
+
+    When I login with username "<username>" and password "<password>"
     Then the login response should not contain a valid session token
+
+    Examples:
+      | username    | password   |
+      | wrongUser   | wrongPass  |
+      | invalidUser | 123456     |
+      | testUser    | wrongPwd   |

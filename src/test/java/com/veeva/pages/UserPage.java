@@ -1,7 +1,7 @@
 // Handles all User related API operations like create user, fetch user and login
 // Extends BaseClient to reuse common request configuration
 
-package com.veeva.clients;
+package com.veeva.pages;
 import com.veeva.models.User;
 import io.restassured.response.Response;
 import org.apache.logging.log4j.LogManager;
@@ -9,15 +9,10 @@ import org.apache.logging.log4j.Logger;
 
 import static io.restassured.RestAssured.given;
 
-public class UserClient extends BaseClient {
-    // Logger to print execution details for debugging
-    private static final Logger log = LogManager.getLogger(UserClient.class);
+public class UserPage extends BasePage {
+    private static final Logger log = LogManager.getLogger(UserPage.class);
     /*
      * This method sends POST request to create a new user.
-     *
-     * Instead of manually creating JSON string, we pass User POJO object.
-     * REST Assured automatically converts this Java object into JSON
-     * before sending the request (Serialization).
      */
     public Response createUser(User user) {
         log.info("Creating user: {}", user.getUsername());

@@ -3,7 +3,7 @@
 * and inherited by  PetClient, StoreClient, and UserClient
 */
 
-package com.veeva.clients;
+package com.veeva.pages;
 import com.veeva.config.ConfigManager;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -11,18 +11,15 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 
-public class BaseClient {
+public class BasePage {
     //RequestSpecBuilder is a REST Assured class that lets us build a reusable API configuration step by step
     protected static final RequestSpecification requestSpec =
             new RequestSpecBuilder()
-                    // Base URL loaded from config.properties
                     .setBaseUri(ConfigManager.getBaseUrl())
-                    //Tells the API — *"I am sending JSON data"*. This automatically adds the header:
-                    //Content-Type: application/json
+
                     .setContentType(ContentType.JSON)
-                    // Every time any API call is made, this automatically prints the full request  and response to  console/logs:
                     .addFilter(new RequestLoggingFilter())
                     .addFilter(new ResponseLoggingFilter())
-                    //Finalises and creates the RequestSpecification object from everything configured above.
                     .build();
+
 }

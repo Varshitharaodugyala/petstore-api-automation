@@ -5,17 +5,15 @@
   like base URL, content type and logging are automatically applied.
 
  */
-package com.veeva.clients;
+package com.veeva.pages;
 import io.restassured.response.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import static io.restassured.RestAssured.given;
 
-public class StoreClient extends BaseClient {
-    // Logger is used to print useful execution details in console and logs.
-    // Helps in debugging and tracking API requests during test execution.
-    private static final Logger log = LogManager.getLogger(StoreClient.class);
+public class StorePage extends BasePage {
+    private static final Logger log = LogManager.getLogger(StorePage.class);
     // This method sends POST request to create a new order in the store.
     // It builds the request body with order details and uses the common requestSpec
     // from BaseClient to send the request.
