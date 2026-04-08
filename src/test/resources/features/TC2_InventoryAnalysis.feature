@@ -1,14 +1,21 @@
 Feature: TC2 - Inventory Analysis (Complex Data Parsing)
 
-  # This scenario validates consistency between two different APIs
-  # 1) /store/inventory → returns count of pets by status
-  # 2) /pet/findByStatus → returns actual list of pets
-
-  Scenario: Validate available pets count matches between inventory and findByStatus
+  # Scenario 1 → Validate /store/inventory API
+  Scenario: Validate inventory API returns available pet count
     When I fetch the store inventory
-    Then the inventory response status should be 200
+    Then the inventory response should be successful
     And the inventory should contain available pets count
+
+
+  # Scenario 2 → Validate /pet/findByStatus API
+  Scenario: Validate findByStatus API returns available pets list
     When I fetch pets with status available
-    Then the pets response status should be 200
+    Then the pets response should be successful
     And the available pets list should not be empty
+
+
+  # Scenario 3 → Compare both APIs (optional but recommended)
+  Scenario: Validate available pet counts match between APIs
+    When I fetch the store inventory
+    And I fetch pets with status available
     Then the available pet counts should approximately match

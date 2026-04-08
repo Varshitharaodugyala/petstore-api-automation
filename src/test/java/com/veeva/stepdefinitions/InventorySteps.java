@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import com.veeva.pages.PetPage;
-
+import io.restassured.response.Response;
 // Step Definition class for Inventory related scenarios
 // Contains actual test execution logic and validations
 public class InventorySteps {
@@ -32,13 +32,15 @@ public class InventorySteps {
         log.info("Inventory available count: {}", count);
     }
 
-    // Validate inventory API executed successfully (basic validation)
-    @Then("the inventory response status should be 200")
-    public void checkinventorystatus() {
-        assertTrue("Inventory count should be >= 0",
-                ctx.getInt("inventoryAvailableCount") >= 0);
-    }
+    @Then("the inventory response should be successful")
+    public void validateInventoryStatus() {
 
+        Response response = (Response) ctx.get("inventoryResponse");
+
+        assertNotNull("Response should not be null", response);
+
+        assertEquals("Expected status code 200", 200, response.getStatusCode());
+    }
     // Validate inventory contains available pets
     @Then("the inventory should contain available pets count")
     public void checkinventorycount() {
@@ -56,28 +58,32 @@ public class InventorySteps {
         ctx.set("petsByStatus", availablePets); // store list for validation
         log.info("Found {} available pets via findByStatus", availablePets.size());
     }
+    @Then("the pets response should be successful")
+    public void validatePetsStatus() {
 
-    // Validate pets API executed successfully
-    @Then("the pets response status should be {int}")
-    public void checkpetsstatus(int code) {
-        List<Pet> pets = (List<Pet>) ctx.get("petsByStatus");
-        assertNotNull("Pets list should not be null", pets);
-        log.info("Pets response verified with {} pets", pets.size());
+        int statusCode = ctx.getInt("petsStatusCode");
+
+        assertEquals("Expected status code 200", 200, statusCode);
     }
 
-    // Validate returned pets list is not empty
+
+    // Validate pets API executed successfully
     @Then("the available pets list should not be empty")
-    public void checkpetsnotempty() {
-        List<Pet> pets = (List<Pet>) ctx.get("petsByStatus");
-        assertFalse("Available pets list should not be empty", pets.isEmpty());
+    public void validatePetsList() {
+        List<?> pets = (List<?>) ctx.get("petsByStatus");
+
+        assertNotNull("Pets list should not be null", pets);
+        assertFalse("Pets list should not be empty", pets.isEmpty());
+
+        log.info("Pets list validation passed with {} pets", pets.size());
     }
 
     // Compare inventory count vs findByStatus count with tolerance
     // Allow 20% difference because public API data can change anytime
-    @Then("the available pet counts should approximately match")
+    @Then("^the available pet counts should approximately match$")
     public void comparecounts() {
         int inventoryCount = ctx.getInt("inventoryAvailableCount");
-        List<Pet> pets = (List<Pet>) ctx.get("petsByStatus");
+        List<?> pets = (List<?>) ctx.get("petsByStatus");
         int findByStatusCount = pets.size();
         log.info("Inventory count: {} | findByStatus count: {}",
                 inventoryCount, findByStatusCount);

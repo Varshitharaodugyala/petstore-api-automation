@@ -42,7 +42,6 @@ public class StorePage extends BasePage {
         log.info("Deleting order id: {}", orderId);
         return given().spec(requestSpec)
                 .pathParam("orderId", orderId)
-                // Adding orderId as path parameter which replaces {orderId} in endpoint URL.
                 .delete("/store/order/{orderId}");
     }
 

@@ -11,22 +11,14 @@ import static io.restassured.RestAssured.given;
 
 public class UserPage extends BasePage {
     private static final Logger log = LogManager.getLogger(UserPage.class);
-    /*
-     * This method sends POST request to create a new user.
-     */
+
     public Response createUser(User user) {
         log.info("Creating user: {}", user.getUsername());
-        /*
-         * given() → start building API request
-         * spec(requestSpec) → apply common request configuration from BaseClient
-         * body(user) → attach request body (User object converted to JSON)
-                * post("/user") → send POST request to create user
-         */
+
         return given().spec(requestSpec).body(user).when().post("/user");
     }
     /*
      * This method sends GET request to fetch user details using username.
-     *
      * Username is passed as path parameter which replaces {username}
      * in the endpoint URL.
      */
@@ -36,10 +28,8 @@ public class UserPage extends BasePage {
     }
     /*
      * This method performs login operation using username and password.
-     *
      * Login API requires credentials to be sent as query parameters.
-     * Example:
-     * /user/login?username=john&password=1234
+     * Example: /user/login?username=john&password=1234
      */
 
     public Response login(String username, String password) {

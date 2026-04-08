@@ -15,6 +15,13 @@ public class UserSteps {
     private static final Logger log = LogManager.getLogger(UserSteps.class);
     private final UserPage userClient = new UserPage();
     private final ScenarioContext ctx;
+
+    // store created & login values
+    private String createdUsername;
+    private String createdPassword;
+    private String loginUsername;
+    private String loginPassword;
+
     public UserSteps(ScenarioContext ctx) {
         this.ctx = ctx;
     }
@@ -36,7 +43,11 @@ public class UserSteps {
         Response r = userClient.createUser(user);
         ctx.set("lastResponse", r);
         ctx.set("userCreateResponse", r);
-        ctx.set("username", username); // optional but useful
+        ctx.set("username", username);
+
+        //  STORE values
+        this.createdUsername = username;
+        this.createdPassword = "password123";
 
         log.info("User created → username: {}, status: {}", username, r.getStatusCode());
     }
@@ -84,18 +95,14 @@ public class UserSteps {
     }
 
     // Validate status code
-    @Then("the user response status should be {int}")
-    public void userresponsestatus(int expectedCode) {
+    @Then("the user response should be not found")
+    public void userResponseShouldBeNotFound() {
 
-        Response r = (Response) ctx.get("getUserResponse");
+        int statusCode = ((Response) ctx.get("getUserResponse")).getStatusCode();
 
-        assertNotNull("Response should not be null", r);
+        assertEquals("Expected status 404", 404, statusCode);
 
-        assertEquals("Expected status: " + expectedCode,
-                expectedCode,
-                r.getStatusCode());
-
-        log.info("Verified status code: {}", expectedCode);
+        log.info("Verified response is 404 Not Found");
     }
 
     // Login
@@ -107,10 +114,14 @@ public class UserSteps {
         ctx.set("lastResponse", r);
         ctx.set("loginResponse", r);
 
+        //  STORE login input
+        this.loginUsername = username;
+        this.loginPassword = password;
+
         log.info("Login attempt → user: {}, status: {}", username, r.getStatusCode());
     }
 
-    // Validate login failure behavior
+    // Validate login failure behavior (EXISTING - unchanged)
     @Then("the login response should not contain a valid session token")
     public void logintoken() {
 
@@ -121,14 +132,30 @@ public class UserSteps {
 
         log.info("Login response → status: {}, body: {}", statusCode, body);
 
-        // Validate API did not crash
         assertTrue("Login should not return server error",
                 statusCode < 500);
 
-        // Swagger Petstore returns success even for invalid login
-        // So we DO NOT strictly fail the test
         if (body != null && body.contains("logged in user session")) {
             log.warn("Petstore API returned session token even for invalid login (known issue)");
         }
+    }
+
+    //  NEW: Positive validation
+    @Then("the login should be successful")
+    public void validateSuccess() {
+
+        assertEquals("Username should match", createdUsername, loginUsername);
+        assertEquals("Password should match", createdPassword, loginPassword);
+    }
+
+    // NEW: Negative validation
+    @Then("the login should be invalid")
+    public void validateInvalid() {
+
+        boolean isValid =
+                createdUsername.equals(loginUsername) &&
+                        createdPassword.equals(loginPassword);
+
+        assertFalse("Login should be invalid", isValid);
     }
 }

@@ -27,7 +27,7 @@ public class StoreSteps {
     }
 
     // Step to fetch order details
-    @When("I fetch the order")
+    @When("I fetch the created order by ID")
     public void fetchorder() {
         int orderId = (int) ctx.getLong("orderId");
         Response r = storeClient.getOrder(orderId);
@@ -35,7 +35,7 @@ public class StoreSteps {
     }
 
     // Step to delete the order
-    @When("I delete the order")
+    @When("I delete the created order by ID")
     public void deleteorder() {
         int orderId = (int) ctx.getLong("orderId");
         Response r = storeClient.deleteOrder(orderId);

@@ -30,28 +30,17 @@ public class PetPage extends BasePage {
         pet.setName(name);
         pet.setStatus(status);
         pet.setPhotoUrls(Collections.singletonList("https://example.com/photo.jpg"));
-        /*
-         * given() → start building request
-         * spec(requestSpec) → apply common configuration from BaseClient
-         * body(pet) → attach request body (Pet object converted to JSON)
-         * post("/pet") → send POST request to create pet
-         */
-
         log.info("Creating pet - id: {}, name: {}, status: {}", id, name, status);
         return given().spec(requestSpec).body(pet).when().post("/pet");
     }
-    /*
-     * This method creates a pet along with category information.
-     * Category is a nested object inside Pet request body.
 
-     */
     public Response createPetWithCategory(long id, String name, String status, String categoryName) {
         Pet pet = new Pet();
         pet.setId(id);
         pet.setName(name);
         pet.setStatus(status);
         pet.setPhotoUrls(Collections.singletonList("https://example.com/photo.jpg"));
-        // Creating Category object and setting it inside Pet .1L represents type long
+
         pet.setCategory(new Category(1L, categoryName));
 
         log.info("Creating pet with category - name: {}, category: {}", name, categoryName);
@@ -77,7 +66,6 @@ public class PetPage extends BasePage {
         pet.setName(name);
         pet.setStatus(status);
         pet.setPhotoUrls(Collections.singletonList("https://example.com/photo.jpg"));
-
         log.info("Updating pet - id: {}, new status: {}", id, status);
         return given().spec(requestSpec).body(pet).when().put("/pet");
     }

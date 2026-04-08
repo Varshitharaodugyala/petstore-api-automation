@@ -8,17 +8,17 @@ Feature: TC1 - The Lifecycle of a Pet (CRUD and Chaining)
   # Scenario Outline is used for Data Driven Testing
   # Same scenario will run multiple times with different pet names
   Scenario Outline: Create, retrieve, update and delete a pet
-    Given I create a pet with name "<petName>" and status "available"
+    When I create a pet with name "<petName>" and status "available"
     Then the pet should be created successfully
     When I fetch the created pet
-    Then the pet name should be "<petName>"
+    And the pet name should be "<petName>"
     And the pet status should be "available"
-    When I update the pet status to "sold"
-    Then the response status code should be 200
+    And I update the pet status to "sold"
+    Then the response should be "successful"
     When I delete the pet
-    Then the response status code should be 200
-    When I fetch the deleted pet
-    Then the response status code should be 404
+    Then the response should be "successful"
+    And I fetch the deleted pet
+    Then the response should be "not found"
 
     # Test Data Table
     Examples:
