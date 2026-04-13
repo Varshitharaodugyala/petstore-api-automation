@@ -8,12 +8,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import com.veeva.pages.PetPage;
+import com.veeva.utils.AssertUtils;
 import io.restassured.response.Response;
+
 // Step Definition class for Inventory related scenarios
-// Contains actual test execution logic and validations
 public class InventorySteps {
 
     private static final Logger log = LogManager.getLogger(InventorySteps.class);
@@ -24,12 +26,19 @@ public class InventorySteps {
         this.ctx = ctx;
     }
 
-    // Step to fetch inventory available pet count from Store API
+    // ================= INVENTORY =================
+
     @When("I fetch the store inventory")
     public void fetchinventory() {
-        int count = storeClient.getAvailableCount();
-        ctx.set("inventoryAvailableCount", count); // store count for later steps
-        log.info("Inventory available count: {}", count);
+
+        Response response = storeClient.getInventory();
+
+        ctx.set("inventoryResponse", response);
+
+        // store full inventory map (available, sold, pending)
+        ctx.set("inventoryMap", response.jsonPath().getMap("$"));
+
+        log.info("Inventory fetched: {}", ctx.get("inventoryMap"));
     }
 
     @Then("the inventory response should be successful")
@@ -39,65 +48,72 @@ public class InventorySteps {
 
         assertNotNull("Response should not be null", response);
 
-        assertEquals("Expected status code 200", 200, response.getStatusCode());
-    }
-    // Validate inventory contains available pets
-    @Then("the inventory should contain available pets count")
-    public void checkinventorycount() {
-        assertTrue("Available count should be non-negative",
-                ctx.getInt("inventoryAvailableCount") >= 0);
+
+        AssertUtils.assertResponseType(response.getStatusCode(), "successful");
+
+        //  merged inventory validation
+        Map<String, Integer> inventory = (Map<String, Integer>) ctx.get("inventoryMap");
+
+        assertNotNull("Inventory should not be null", inventory);
+        assertFalse("Inventory should not be empty", inventory.isEmpty());
     }
 
-    // Client used to call Pet APIs
+    // ================= PET STATUS =================
+
     private final PetPage petClient = new PetPage();
 
-    // Step to fetch pets list with status = available
-    @When("I fetch pets with status available")
-    public void fetchavailable() {
-        List<Pet> availablePets = petClient.findPetsByStatusAsList("available");
-        ctx.set("petsByStatus", availablePets); // store list for validation
-        log.info("Found {} available pets via findByStatus", availablePets.size());
+    @When("I fetch pets with status {string}")
+    public void fetchPetsByStatus(String status) {
+
+        Response response = petClient.findPetsByStatus(status);
+
+        ctx.set("petsResponse", response);
+        ctx.set("currentStatus", status);
+
+        List<Pet> pets = response.jsonPath().getList("", Pet.class);
+        ctx.set("petsByStatus", pets);
+
+        log.info("Found {} {} pets via findByStatus", pets.size(), status);
     }
-    @Then("the pets response should be successful")
-    public void validatePetsStatus() {
 
-        int statusCode = ctx.getInt("petsStatusCode");
+    //  MERGED METHOD (response + list validation)
+    @Then("the pets response should be successful and {string} pets list should not be empty")
+    public void validatePetsResponseAndList(String status) {
 
-        assertEquals("Expected status code 200", 200, statusCode);
-    }
+        // response validation
+        Response response = (Response) ctx.get("petsResponse");
+        assertNotNull("Response should not be null", response);
 
+        AssertUtils.assertResponseType(response.getStatusCode(), "successful");
 
-    // Validate pets API executed successfully
-    @Then("the available pets list should not be empty")
-    public void validatePetsList() {
+        // list validation
         List<?> pets = (List<?>) ctx.get("petsByStatus");
 
         assertNotNull("Pets list should not be null", pets);
-        assertFalse("Pets list should not be empty", pets.isEmpty());
+        assertFalse(status + " pets list should not be empty", pets.isEmpty());
 
-        log.info("Pets list validation passed with {} pets", pets.size());
+        log.info("{} pets validation passed with {} pets", status, pets.size());
     }
 
-    // Compare inventory count vs findByStatus count with tolerance
-    // Allow 20% difference because public API data can change anytime
-    @Then("^the available pet counts should approximately match$")
-    public void comparecounts() {
-        int inventoryCount = ctx.getInt("inventoryAvailableCount");
+    // ================= COUNT COMPARISON =================
+
+    @Then("the pet counts for {string} should approximately match")
+    public void comparecounts(String status) {
+
+        Map<String, Integer> inventory = (Map<String, Integer>) ctx.get("inventoryMap");
         List<?> pets = (List<?>) ctx.get("petsByStatus");
+
+        int inventoryCount = inventory.getOrDefault(status, 0);
         int findByStatusCount = pets.size();
-        log.info("Inventory count: {} | findByStatus count: {}",
-                inventoryCount, findByStatusCount);
+
+        log.info("Inventory {}: {} | API {}: {}",
+                status, inventoryCount, status, findByStatusCount);
+
         int diff = Math.abs(inventoryCount - findByStatusCount);
         double tolerance = inventoryCount > 0 ? inventoryCount * 0.20 : 10;
-        log.info("Diff: {} | Allowed tolerance (20%): {}", diff, tolerance);
-        assertTrue(
-                "Counts should be within tolerance",
-                diff <= tolerance);
-    }
 
-    // Alternate step that reuses same validation logic
-    @Then("the available pet counts should match")
-    public void matchcounts() {
-        comparecounts();
+        log.info("Diff: {} | Allowed tolerance: {}", diff, tolerance);
+
+        assertTrue("Counts should be within tolerance", diff <= tolerance);
     }
 }

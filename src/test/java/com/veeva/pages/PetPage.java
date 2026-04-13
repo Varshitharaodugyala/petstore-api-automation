@@ -46,14 +46,7 @@ public class PetPage extends BasePage {
         log.info("Creating pet with category - name: {}, category: {}", name, categoryName);
         return given().spec(requestSpec).body(pet).when().post("/pet");
     }
-    /*
-     * This method fetches pet details using petId.
-     * petId is passed as path parameter which replaces {petId} in endpoint URL.
-     */
-    public Response getPetById(long petId) {
-        log.info("Fetching pet by id: {}", petId);
-        return given().spec(requestSpec).when().get("/pet/{petId}", petId);
-    }
+
     /*
      * This method updates an existing pet.
      * PUT request is used for updating resources in REST APIs.
@@ -73,10 +66,7 @@ public class PetPage extends BasePage {
      * This method deletes a pet using petId.
      * DELETE request removes the resource from server.
      */
-    public Response deletePet(long petId) {
-        log.info("Deleting pet id: {}", petId);
-        return given().spec(requestSpec).when().delete("/pet/{petId}", petId);
-    }
+
     /*
      * This method searches pets based on their status using query parameter.
      * Example endpoint:
@@ -93,19 +83,22 @@ public class PetPage extends BasePage {
         return findPetsByStatus(status)
                 .then().extract().jsonPath().getList(".", Pet.class);
     }
-    public Response getPetByInvalidId(String id) {
+    public Response getPetById(String petId) {
+        log.info("Fetching pet by id: {}", petId);
         return given()
                 .spec(requestSpec)
-                .pathParam("petId", id)
+                .pathParam("petId", petId)
                 .when()
                 .get("/pet/{petId}");
     }
 
-    public Response deletePetByInvalidId(String id) {
+    public Response deletePet(String petId) {
+        log.info("Deleting pet by id: {}", petId);
         return given()
                 .spec(requestSpec)
-                .pathParam("petId", id)
+                .pathParam("petId", petId)
                 .when()
                 .delete("/pet/{petId}");
     }
+
 }

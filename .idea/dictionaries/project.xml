@@ -2,7 +2,12 @@
   <dictionary name="project">
     <words>
       <w>checkinventorycount</w>
+      <w>checkname</w>
+      <w>createorder</w>
+      <w>deletepet</w>
       <w>fetchinventory</w>
+      <w>fetchorder</w>
+      <w>updatestatusfromto</w>
     </words>
   </dictionary>
 </component>

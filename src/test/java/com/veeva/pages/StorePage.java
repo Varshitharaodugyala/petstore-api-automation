@@ -30,15 +30,14 @@ public class StorePage extends BasePage {
     }
     // This method fetches order details using orderId as path parameter.
     // It sends GET request to retrieve specific order information.
-    public Response getOrder(int orderId) {
+    public Response getOrder(String orderId) {
         log.info("Fetching order id: {}", orderId);
         return given().spec(requestSpec)
                 .pathParam("orderId", orderId)
                 .get("/store/order/{orderId}");
     }
-    // This method deletes an existing order using orderId.
-    // It sends DELETE request to remove the order from the system.
-    public Response deleteOrder(int orderId) {
+
+    public Response deleteOrder(String orderId) {
         log.info("Deleting order id: {}", orderId);
         return given().spec(requestSpec)
                 .pathParam("orderId", orderId)

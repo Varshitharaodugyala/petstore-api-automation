@@ -3,6 +3,7 @@ package com.veeva.stepdefinitions;
 import com.veeva.pages.UserPage;
 import com.veeva.context.ScenarioContext;
 import com.veeva.models.User;
+import com.veeva.utils.AssertUtils;
 import io.cucumber.java.en.*;
 import io.restassured.response.Response;
 import org.apache.logging.log4j.LogManager;
@@ -16,7 +17,6 @@ public class UserSteps {
     private final UserPage userClient = new UserPage();
     private final ScenarioContext ctx;
 
-    // store created & login values
     private String createdUsername;
     private String createdPassword;
     private String loginUsername;
@@ -28,8 +28,7 @@ public class UserSteps {
 
     // Create user
     @When("I create a user with username {string} and email {string}")
-    public void createuser(String username, String email) {
-
+    public void createUser(String username, String email) {
         User user = new User();
         user.setId(System.currentTimeMillis());
         user.setUsername(username);
@@ -45,7 +44,6 @@ public class UserSteps {
         ctx.set("userCreateResponse", r);
         ctx.set("username", username);
 
-        //  STORE values
         this.createdUsername = username;
         this.createdPassword = "password123";
 
@@ -54,108 +52,85 @@ public class UserSteps {
 
     // Validate no server error
     @Then("the user creation response should not return a server error")
-    public void servererror() {
-
+    public void serverError() {
         Response r = (Response) ctx.get("userCreateResponse");
-
         int statusCode = r.getStatusCode();
-
         log.info("User creation status: {}", statusCode);
-
         assertNotEquals("Should not return 500 server error", 500, statusCode);
-
-        assertTrue("Status should be < 500",
-                statusCode < 500);
+        assertTrue("Status should be < 500", statusCode < 500);
     }
 
-    // Fetch user
+    // Fetch user and validate message in single method
     @When("I request a user with username {string}")
-    public void requestuser(String username) {
-
+    public void requestUser(String username) {
         Response r = userClient.getUserByUsername(username);
-
         ctx.set("lastResponse", r);
         ctx.set("getUserResponse", r);
-
         log.info("Fetching user '{}' → status: {}", username, r.getStatusCode());
     }
 
-    // Validate response message
+    // Single method handles both fetch and message validation
     @Then("the response message should contain {string}")
-    public void responsemessage(String expected) {
-
+    public void responseMessage(String expected) {
         Response r = (Response) ctx.get("getUserResponse");
-
+        int statusCode = r.getStatusCode();
         String message = r.jsonPath().getString("message");
-
-        log.info("Response message: {}", message);
-
+        log.info("Response status: {}, message: {}", statusCode, message);
         assertTrue("Message should contain: " + expected,
                 message != null && message.contains(expected));
+        log.info("Validated message contains '{}'", expected);
     }
 
-    // Validate status code
+    // Validate status code is 404
     @Then("the user response should be not found")
     public void userResponseShouldBeNotFound() {
-
-        int statusCode = ((Response) ctx.get("getUserResponse")).getStatusCode();
-
-        assertEquals("Expected status 404", 404, statusCode);
-
+        Response r = (Response) ctx.get("getUserResponse");
+        AssertUtils.assertResponseType(r.getStatusCode(), "not found");
         log.info("Verified response is 404 Not Found");
     }
 
     // Login
     @When("I login with username {string} and password {string}")
     public void login(String username, String password) {
-
         Response r = userClient.login(username, password);
-
         ctx.set("lastResponse", r);
         ctx.set("loginResponse", r);
-
-        //  STORE login input
         this.loginUsername = username;
         this.loginPassword = password;
-
         log.info("Login attempt → user: {}, status: {}", username, r.getStatusCode());
     }
 
-    // Validate login failure behavior (EXISTING - unchanged)
+    // Validate login token behavior
     @Then("the login response should not contain a valid session token")
-    public void logintoken() {
-
+    public void loginToken() {
         Response r = (Response) ctx.get("loginResponse");
-
         int statusCode = r.getStatusCode();
         String body = r.getBody().asString();
-
         log.info("Login response → status: {}, body: {}", statusCode, body);
-
-        assertTrue("Login should not return server error",
-                statusCode < 500);
-
+        assertTrue("Login should not return server error", statusCode < 500);
         if (body != null && body.contains("logged in user session")) {
             log.warn("Petstore API returned session token even for invalid login (known issue)");
         }
     }
 
-    //  NEW: Positive validation
-    @Then("the login should be successful")
-    public void validateSuccess() {
+    // Single method handles both valid and invalid login
+    @Then("the login should be {string}")
+    public void validateLogin(String expectedResult) {
+        boolean isValid = createdUsername != null
+                && createdUsername.equals(loginUsername)
+                && createdPassword.equals(loginPassword);
 
-        assertEquals("Username should match", createdUsername, loginUsername);
-        assertEquals("Password should match", createdPassword, loginPassword);
-    }
-
-    // NEW: Negative validation
-    @Then("the login should be invalid")
-    public void validateInvalid() {
-
-        boolean isValid =
-                createdUsername.equals(loginUsername) &&
-                        createdPassword.equals(loginPassword);
-
-        assertFalse("Login should be invalid", isValid);
+        switch (expectedResult.toLowerCase()) {
+            case "successful":
+                assertTrue("Login should be valid", isValid);
+                log.info("Login validated as successful → user: {}", loginUsername);
+                break;
+            case "invalid":
+                assertFalse("Login should be invalid", isValid);
+                log.info("Login validated as invalid → user: {}", loginUsername);
+                break;
+            default:
+                fail("Unknown login result type: " + expectedResult);
+        }
     }
 }

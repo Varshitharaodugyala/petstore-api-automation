@@ -3,6 +3,7 @@ package com.veeva.stepdefinitions;
 import com.veeva.pages.PetPage;
 import com.veeva.context.ScenarioContext;
 import com.veeva.models.Pet;
+import com.veeva.utils.AssertUtils;
 import io.cucumber.java.en.*;
 import io.restassured.response.Response;
 import org.apache.logging.log4j.LogManager;
@@ -17,204 +18,145 @@ public class PetSteps {
     private static final Logger log = LogManager.getLogger(PetSteps.class);
     private final PetPage petClient = new PetPage();
     private final ScenarioContext ctx;
+
     public PetSteps(ScenarioContext ctx) {
         this.ctx = ctx;
     }
 
-    // Just a configuration / readiness step
     @Given("the petstore API is available")
-    public void apiready() {
+    public void apiReady() {
         log.info("Petstore API configured and ready");
     }
 
-    // Step to create a pet with name and status
+    // Create pet with name and status
     @Given("I create a pet with name {string} and status {string}")
-    public void createpet(String name, String status) {
+    public void createPet(String name, String status) {
         long id = System.currentTimeMillis();
         Response response = petClient.createPet(id, name, status);
-        ctx.set("petId", response.jsonPath().getLong("id"));
+        ctx.set("petId", response.jsonPath().getString("id"));
         ctx.set("petName", name);
         ctx.set("createResponse", response);
-        log.info("Created pet id: {}", ctx.getLong("petId"));
+        log.info("Created pet id: {}", ctx.get("petId"));
     }
 
-    // Step to create a pet with category
+    // Create pet with category
     @Given("I create a new pet with name {string} category {string} and status {string}")
-    public void createpetcat(String name, String category, String status) {
+    public void createPetCat(String name, String category, String status) {
         long id = System.currentTimeMillis();
         Response response = petClient.createPetWithCategory(id, name, status, category);
-        ctx.set("petId", response.jsonPath().getLong("id"));
+        ctx.set("petId", response.jsonPath().getString("id"));
         ctx.set("petName", name);
         ctx.set("categoryName", category);
-        ctx.set("createcatResponse", response);
-        log.info("Created pet with category, id: {}", ctx.getLong("petId"));
+        ctx.set("createResponse", response);
+        log.info("Created pet with category, id: {}", ctx.get("petId"));
     }
 
-    // Validate pet creation success
+    // Single method handles both pet and pet with category creation validation
     @Then("the pet should be created successfully")
-    public void checkcreate() {
+    public void checkCreate() {
         Response r = (Response) ctx.get("createResponse");
-        assertEquals("Pet creation should return 200", 200, r.getStatusCode());
-        assertNotNull("Pet ID should not be null", r.jsonPath().get("id"));
-    }
+        AssertUtils.assertResponseType(r.getStatusCode(), "successful");
+        assertNotNull("Pet ID should not be null", r.jsonPath().getString("id"));
+        log.info("Pet created successfully with id: {}", r.jsonPath().getString("id"));
 
-    // Validate category in response
-    @Then("the pet should be created with the given category")
-    public void checkcategory() {
-        Response r = (Response) ctx.get("createcatResponse");
-        assertEquals("Pet creation should return 200", 200, r.getStatusCode());
-        assertEquals("Category should match",
-                ctx.getString("categoryName"),
-                r.jsonPath().getString("category.name"));
+        // If category exists in context, validate it too
+        String category = ctx.getString("categoryName");
+        if (category != null) {
+            assertEquals("Category should match", category, r.jsonPath().getString("category.name"));
+            log.info("Pet category '{}' validated successfully", category);
+        }
     }
 
     // Fetch created pet
     @When("I fetch the created pet")
-    public void fetchpet() {
-        Response r = petClient.getPetById(ctx.getLong("petId"));
+    public void fetchPet() {
+        Response r = petClient.getPetById((String) ctx.get("petId"));
         ctx.set("getResponse", r);
     }
 
-    // Generic GET pet step (works for existing or non-existing id)
-    @When("I send a GET request to fetch the pet")
-    public void sendget() {
-        long id = ctx.get("petId") != null
-                ? ctx.getLong("petId")
-                : ctx.getLong("nonExistentPetId");
 
-        Response r = petClient.getPetById(id);
-        ctx.set("getResponse", r);
-        ctx.set("lastResponse", r);
-        log.info("GET pet by id: {} returned status: {}", id, r.getStatusCode());
-    }
 
     // Validate pet name
     @Then("the pet name should be {string}")
     public void checkname(String name) {
         Response r = (Response) ctx.get("getResponse");
-        assertEquals("Pet name should match",
-                name,
-                r.jsonPath().getString("name"));
+        assertEquals("Pet name should match", name, r.jsonPath().getString("name"));
     }
 
     // Validate pet status
     @Then("the pet status should be {string}")
-    public void checkstatus(String status) {
+    public void checkStatus(String status) {
         Response r = (Response) ctx.get("getResponse");
-        assertEquals("Pet status should match",
-                status,
-                r.jsonPath().getString("status"));
+        assertEquals("Pet status should match", status, r.jsonPath().getString("status"));
     }
 
-    // Update pet status
-    @When("I update the pet status to {string}")
-    public void updatestatus(String status) {
-        Response r = petClient.updatePet(
-                ctx.getLong("petId"),
-                ctx.getString("petName"),
-                status);
-        ctx.set("lastResponse", r);
-        ctx.set("updateResponse", r);
-    }
-
-    // Validate current status then update
+    // Single method — verifies current status then updates
     @When("I update the pet status from {string} to {string}")
     public void updatestatusfromto(String from, String to) {
-
-        Response current = petClient.getPetById(ctx.getLong("petId"));
-
+        Response current = petClient.getPetById((String) ctx.get("petId"));
         assertEquals("Pet should currently have status " + from,
-                from,
-                current.jsonPath().getString("status"));
-
+                from, current.jsonPath().getString("status"));
         log.info("Verified current status is '{}', now updating to '{}'", from, to);
 
-        updatestatus(to);
+        Response r = petClient.updatePet(
+                Long.parseLong((String) ctx.get("petId")),
+                ctx.getString("petName"),
+                to);
+        ctx.set("lastResponse", r);
+        ctx.set("updateResponse", r);
+        log.info("Updated pet status to '{}'", to);
     }
 
-    // Validate updated status
-    @Then("the pet update status should be {string}")
-    public void checkupdated(String status) {
 
-        Response r = (Response) ctx.get("updateResponse");
 
-        assertEquals("Updated status should be " + status,
-                status,
-                r.jsonPath().getString("status"));
-    }
-
-    // Delete pet
+    // Delete pet — PetPage.deletePet accepts String, no conversion needed
     @When("I delete the pet")
     public void deletepet() {
-
-        Response r = petClient.deletePet(ctx.getLong("petId"));
-
+        Response r = petClient.deletePet((String) ctx.get("petId"));
         ctx.set("lastResponse", r);
         ctx.set("deleteResponse", r);
+        log.info("Delete pet with id: {} returned status: {}", ctx.get("petId"), r.getStatusCode());
     }
 
-    // Try fetching deleted pet
+    // Fetch deleted pet — getPetById accepts String, no conversion needed
     @When("I fetch the deleted pet")
-    public void fetchdeleted() {
-
-        Response r = petClient.getPetById(ctx.getLong("petId"));
-
+    public void fetchDeleted() {
+        Response r = petClient.getPetById((String) ctx.get("petId"));
         ctx.set("getResponse", r);
         ctx.set("lastResponse", r);
     }
 
-    // Fetch pets list by status
+    // Fetch pets by status
     @When("I fetch pets with status {string}")
-    public void fetchbystatus(String status) {
-
+    public void fetchByStatus(String status) {
         List<Pet> pets = petClient.findPetsByStatusAsList(status);
-
         ctx.set("petsByStatus", pets);
         ctx.set("lastResponse", petClient.findPetsByStatus(status));
-
         log.info("Found {} pets with status '{}'", pets.size(), status);
     }
 
     // Validate all pets have expected status
     @Then("all pets should have status {string}")
-    public void checkallstatus(String expectedStatus) {
-
+    public void checkAllStatus(String expectedStatus) {
         @SuppressWarnings("unchecked")
         List<Pet> pets = (List<Pet>) ctx.get("petsByStatus");
-
         pets.forEach(p ->
                 assertEquals("All pets should have status " + expectedStatus,
-                        expectedStatus,
-                        p.getStatus()));
+                        expectedStatus, p.getStatus()));
     }
 
-    // Generic response status validation
+    // Delegates to AssertUtils — no duplicate switch logic
     @Then("the response should be {string}")
     public void validateResponse(String type) {
-
         Response r = (Response) ctx.get("lastResponse");
-
         assertNotNull("Response should not be null", r);
-
-        int statusCode = r.getStatusCode();
-
-        switch (type.toLowerCase()) {
-            case "successful":
-                assertEquals(200, statusCode);
-                break;
-            case "not found":
-                assertEquals(404, statusCode);
-                break;
-            default:
-                fail("Unknown response type: " + type);
-        }
+        AssertUtils.assertResponseType(r.getStatusCode(), type);
     }
 
-    // Validate using Java Streams if created pet exists in sold pets list
+    // Validate created pet exists in sold pets list
     @Then("the created pet ID should be found in the sold pets list")
-    public void checkstream() {
-
-        long createdId = ctx.getLong("petId");
+    public void checkStream() {
+        long createdId = Long.parseLong((String) ctx.get("petId"));
 
         @SuppressWarnings("unchecked")
         List<Pet> soldPets = (List<Pet>) ctx.get("petsByStatus");
@@ -225,7 +167,6 @@ public class PetSteps {
 
         assertTrue("Pet ID " + createdId + " should be in sold pets list via Java Stream",
                 found.isPresent());
-
         log.info("Pet ID {} found in sold list via Stream", createdId);
     }
 }
