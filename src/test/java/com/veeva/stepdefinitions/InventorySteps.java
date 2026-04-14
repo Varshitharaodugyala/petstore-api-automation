@@ -79,20 +79,16 @@ public class InventorySteps {
     //  MERGED METHOD (response + list validation)
     @Then("the pets response should be successful and {string} pets list should not be empty")
     public void validatePetsResponseAndList(String status) {
-
-        // response validation
+        // Check all possible keys where a response might be stored
         Response response = (Response) ctx.get("petsResponse");
-        assertNotNull("Response should not be null", response);
+        if (response == null) response = (Response) ctx.get("lastResponse");
 
+        assertNotNull("❌ ERROR: No response found in context! Ensure 'I fetch pets' ran first.", response);
         AssertUtils.assertResponseType(response.getStatusCode(), "successful");
 
-        // list validation
         List<?> pets = (List<?>) ctx.get("petsByStatus");
-
-        assertNotNull("Pets list should not be null", pets);
+        assertNotNull("❌ ERROR: Pets list was null!", pets);
         assertFalse(status + " pets list should not be empty", pets.isEmpty());
-
-        log.info("{} pets validation passed with {} pets", status, pets.size());
     }
 
     // ================= COUNT COMPARISON =================

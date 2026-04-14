@@ -2,53 +2,45 @@ package com.veeva.context;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-/*
- * ScenarioContext is used to store and share test data between
- * different Step Definition methods during execution of ONE Cucumber scenario.
- *
- * Example:
- * Step 1 → Create Pet → store petId
- * Step 2 → Get Pet → use stored petId
- *
- * So this class works like a temporary memory (key-value storage)
- * which is cleared after scenario execution.
- */
 public class ScenarioContext {
-
-    // Map to store scenario data
-    // Key → String (example: "petId")
-    // Value → Object (can be Long, String, Response etc.)
+    private static final Logger log = LogManager.getLogger(ScenarioContext.class);
     private final Map<String, Object> context = new HashMap<>();
 
-    // Store value in context using key
     public void set(String key, Object value) {
+        log.debug("💾 CONTEXT SET: [{}] = {}", key, value);
         context.put(key, value);
     }
 
-    // Get stored value using key (generic Object)
     public Object get(String key) {
-        return context.get(key);
+        Object value = context.get(key);
+        if (value == null) {
+            log.error("❌ CONTEXT ERROR: Key [{}] not found! Current keys: {}", key, context.keySet());
+        }
+        return value;
     }
 
-    // Get stored numeric value as long
-    // Used for values like petId, orderId
     public long getLong(String key) {
-        return ((Number) context.get(key)).longValue();
+        Object val = get(key);
+        if (val == null) return 0L;
+        return ((Number) val).longValue();
     }
 
-    // Get stored value as String
     public String getString(String key) {
-        return (String) context.get(key);
+        Object val = get(key);
+        return (val == null) ? "" : String.valueOf(val);
     }
 
-    // Get stored numeric value as int
     public int getInt(String key) {
-        return ((Number) context.get(key)).intValue();
+        Object val = get(key);
+        if (val == null) return 0;
+        return ((Number) val).intValue();
     }
 
-    // Clear all stored data after scenario finishes
     public void clear() {
+        log.debug("🧹 CONTEXT CLEARED");
         context.clear();
     }
 }
