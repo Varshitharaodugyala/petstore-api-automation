@@ -15,7 +15,7 @@ API Test Automation framework for Swagger Petstore using Java, REST Assured, and
 | JUnit 4 | Test runner |
 
 ## Project Structure
-'''
+```
 petstore-api-automation/
 ├── src/
 │   ├── main/
@@ -62,7 +62,7 @@ petstore-api-automation/
 ├── pom.xml
 └── README.md
 
-'''
+```
 ##Feature Files
 
 1) TC1: Pet Lifecycle (CRUD & Chaining)
