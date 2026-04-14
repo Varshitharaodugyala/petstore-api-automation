@@ -63,6 +63,15 @@ petstore-api-automation/
 └── README.md
 
 ```
+
+## ⚙️ Prerequisites
+
+- Java 11+
+- Maven 3+
+- IntelliJ IDEA
+- Internet connection (for API calls)
+
+  ```
 ##Feature Files
 
 1) TC1: Pet Lifecycle (CRUD & Chaining)
@@ -116,7 +125,7 @@ environment variables before attempting to run the project.
  
  6)Optionally, you can run the test runner class directly from the IDE to execute specific scenarios during development.
 
-
+```
 
 ### API Reference
 
@@ -126,7 +135,29 @@ https://petstore.swagger.io/v2
 The Swagger UI can be accessed using the following link, which provides interactive API documentation and allows manual testing of endpoints:
 https://petstore.swagger.io/
 
-## 🏗️ Architecture Diagram
+##  Architecture Diagram of Swagger petstore
 
 ![Architecture Diagram](docs/swagger-petstore-diagram.png)
+
+##  Execution Flow
+
+1. Maven triggers TestRunner
+2. Cucumber reads Feature files
+3. Step Definitions map Gherkin steps to Java methods
+4. Hooks manage setup and teardown
+5. ScenarioContext stores runtime data (petId, response)
+6. Client layer sends API requests via REST Assured
+7. BasePage manages common configuration
+8. Requests hit Petstore API
+
+## Reporting
+
+The framework generates:
+
+- HTML Report (Cucumber)
+- JSON Report
+- JUnit XML Report
+
+Reports help in debugging and analyzing test execution results.   
+
    
