@@ -71,7 +71,7 @@ petstore-api-automation/
 - IntelliJ IDEA
 - Internet connection (for API calls)
 
-  ```
+```
 ##Feature Files
 
 1) TC1: Pet Lifecycle (CRUD & Chaining)
@@ -108,7 +108,7 @@ petstore-api-automation/
    2)Fetch sold pets list
    3)Validate created pet exists in sold list
 
-
+```
 ### How to Run the Project
 
  1)Ensure that Java (version 8 or above) and Maven are installed on your system and properly configured in the 
@@ -125,7 +125,7 @@ environment variables before attempting to run the project.
  
  6)Optionally, you can run the test runner class directly from the IDE to execute specific scenarios during development.
 
-```
+
 
 ### API Reference
 
