@@ -71,10 +71,12 @@ public class PetSteps {
     public void fetchPet() throws InterruptedException {
         String petId = ctx.getString("petId");
         Response r = null;
-        for (int i = 0; i < 5; i++) {
+
+        for (int i = 0; i < 6; i++) { // Try for up to 18 seconds
             r = petClient.getPetById(petId);
             if (r.getStatusCode() == 200 && r.jsonPath().get("name") != null) break;
-            Thread.sleep(2000);
+            log.warn("⏳ Pet {} not ready, retrying (Attempt {})...", petId, i + 1);
+            Thread.sleep(3000);
         }
         saveContext(r, r.jsonPath().getString("name"));
     }
@@ -105,8 +107,11 @@ public class PetSteps {
     }
 
     @When("I delete the pet")
-    public void deletePet() {
-        Response r = petClient.deletePet(ctx.getString("petId"));
+    public void deletePet() throws InterruptedException {
+        Thread.sleep(2000); // 💡 GIVE THE API TIME TO BREATHE
+        String petId = ctx.getString("petId");
+        log.info("🗑️ Deleting pet ID: {}", petId);
+        Response r = petClient.deletePet(petId);
         ctx.set("lastResponse", r);
     }
 
@@ -117,12 +122,16 @@ public class PetSteps {
         ctx.set("lastResponse", r);
     }
 
-    @When("I fetch pets with status {string}")
+    @When("I fetch pets with status as {string}")
     public void fetchByStatus(String status) {
         Response r = petClient.findPetsByStatus(status);
+        // CRITICAL: Save to both keys so InventorySteps can see it
         ctx.set("lastResponse", r);
+        ctx.set("petsResponse", r);
+
         List<Pet> list = r.jsonPath().getList("", Pet.class);
         ctx.set("petsByStatus", list);
+        log.info("Fetched {} pets with status {}", list.size(), status);
     }
 
     @And("all pets should have status {string}")

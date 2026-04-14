@@ -62,32 +62,33 @@ public class InventorySteps {
 
     private final PetPage petClient = new PetPage();
 
-    @When("I fetch pets with status  as {string}")
-    public void fetchPetsByStatus(String status) {
-
+    @When("I fetch pets with status {string}")
+    public void fetchinventoryPets(String status) {
+        log.info("🔎 Fetching pet list for status: {}", status);
         Response response = petClient.findPetsByStatus(status);
 
+        // 💡 SAVE TO ALL KEYS TO PREVENT CONTEXT ERRORS
+        ctx.set("lastResponse", response);
         ctx.set("petsResponse", response);
-        ctx.set("currentStatus", status);
 
         List<Pet> pets = response.jsonPath().getList("", Pet.class);
         ctx.set("petsByStatus", pets);
-
-        log.info("Found {} {} pets via findByStatus", pets.size(), status);
     }
 
     //  MERGED METHOD (response + list validation)
     @Then("the pets response should be successful and {string} pets list should not be empty")
     public void validatePetsResponseAndList(String status) {
-        // Check all possible keys where a response might be stored
+        // Check both possible keys to ensure we find the response
         Response response = (Response) ctx.get("petsResponse");
-        if (response == null) response = (Response) ctx.get("lastResponse");
+        if (response == null) {
+            response = (Response) ctx.get("lastResponse");
+        }
 
-        assertNotNull("❌ ERROR: No response found in context! Ensure 'I fetch pets' ran first.", response);
+        assertNotNull("❌ Context Error: No response found! Check if 'I fetch pets' ran correctly.", response);
         AssertUtils.assertResponseType(response.getStatusCode(), "successful");
 
         List<?> pets = (List<?>) ctx.get("petsByStatus");
-        assertNotNull("❌ ERROR: Pets list was null!", pets);
+        assertNotNull("❌ Context Error: Pets list was null!", pets);
         assertFalse(status + " pets list should not be empty", pets.isEmpty());
     }
 

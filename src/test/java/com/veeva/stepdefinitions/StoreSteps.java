@@ -48,11 +48,17 @@ public class StoreSteps {
 
     @Then("the order should be deleted successfully")
     public void verifyOrderDeleted() throws InterruptedException {
-        Thread.sleep(3000); // Give the API 3 seconds to sync the deletion
         String orderId = (String) ctx.get("orderId");
-        Response r = storeClient.getOrder(orderId);
-        // We accept 404 (Deleted) or 400 (Invalid ID)
-        assertTrue("Expected 404 or 400 but got: " + r.getStatusCode(),
-                r.getStatusCode() == 404 || r.getStatusCode() == 400);
+        int statusCode = 0;
+
+        for (int i = 0; i < 5; i++) {
+            Response r = storeClient.getOrder(orderId);
+            statusCode = r.getStatusCode();
+            if (statusCode == 404 || statusCode == 400) break;
+            log.warn("⏳ Order {} still exists, waiting for deletion sync...", orderId);
+            Thread.sleep(3000);
+        }
+        assertTrue("Expected 404 or 400 but got: " + statusCode,
+                statusCode == 404 || statusCode == 400);
     }
 }
