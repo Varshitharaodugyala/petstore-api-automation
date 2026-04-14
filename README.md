@@ -64,7 +64,7 @@ petstore-api-automation/
 
 ```
 
-## ⚙️ Prerequisites
+##  Prerequisites
 
 - Java 11+
 - Maven 3+
@@ -72,7 +72,7 @@ petstore-api-automation/
 - Internet connection (for API calls)
 
 
-##Feature Files
+## Feature Files
 ```
 1) TC1: Pet Lifecycle (CRUD & Chaining)
     1)Create pet (POST /pet),Retrieve pet,Update pet,Delete pet
