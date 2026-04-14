@@ -62,7 +62,7 @@ public class InventorySteps {
 
     private final PetPage petClient = new PetPage();
 
-    @When("I fetch pets with status {string}")
+    @When("I fetch pets with status  as {string}")
     public void fetchPetsByStatus(String status) {
 
         Response response = petClient.findPetsByStatus(status);

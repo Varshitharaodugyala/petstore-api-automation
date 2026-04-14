@@ -5,7 +5,7 @@ Feature: TC2 - Inventory Analysis (Dynamic and Reusable)
 
   # Validate findByStatus returns non-empty list for each status
   Scenario Outline: Validate findByStatus API
-    When I fetch pets with status "<status>"
+    When I fetch pets with status  as "<status>"
     Then the pets response should be successful and "<status>" pets list should not be empty
 
     Examples:
@@ -17,7 +17,7 @@ Feature: TC2 - Inventory Analysis (Dynamic and Reusable)
   # Cross-endpoint — compare inventory count vs findByStatus count
   Scenario Outline: Compare inventory and pet counts
     When I fetch the store inventory
-    And I fetch pets with status "<status>"
+    Then the inventory response should be successful
     Then the pets response should be successful and "<status>" pets list should not be empty
     And the pet counts for "<status>" should approximately match
 

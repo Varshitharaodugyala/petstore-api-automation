@@ -31,6 +31,7 @@ Feature: TC1 - The Lifecycle of a Pet (CRUD and Chaining)
 
     Examples:
       | id           |
+      |123           |
       | 999999       |
       | abc          |
       | 12.5         |
