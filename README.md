@@ -71,9 +71,9 @@ petstore-api-automation/
 - IntelliJ IDEA
 - Internet connection (for API calls)
 
-```
-##Feature Files
 
+##Feature Files
+```
 1) TC1: Pet Lifecycle (CRUD & Chaining)
     1)Create pet (POST /pet),Retrieve pet,Update pet,Delete pet
       validating the response as successful or not found
