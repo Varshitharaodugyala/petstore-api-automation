@@ -31,11 +31,19 @@ public class StoreSteps {
     }
 
     @When("I fetch the created order by ID")
-    public void fetchOrder() {
+    public void fetchOrder() throws InterruptedException {
         String orderId = (String) ctx.get("orderId");
-        Response r = storeClient.getOrder(orderId);
+        Response r = null;
+
+        log.info("🕵️ Polling for Order ID: {}", orderId);
+        for (int i = 0; i < 5; i++) {
+            r = storeClient.getOrder(orderId);
+            if (r.getStatusCode() == 200) break;
+
+            log.warn("⏳ Order not indexed yet, retrying... (Attempt {})", i + 1);
+            Thread.sleep(3000); // Wait 3 seconds before next attempt
+        }
         ctx.set("lastResponse", r);
-        log.info("Fetched order id: {} returned status: {}", orderId, r.getStatusCode());
     }
 
     @When("I delete the created order by ID")

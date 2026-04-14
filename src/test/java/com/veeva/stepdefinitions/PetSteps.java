@@ -108,10 +108,21 @@ public class PetSteps {
 
     @When("I delete the pet")
     public void deletePet() throws InterruptedException {
-        Thread.sleep(2000); // 💡 GIVE THE API TIME TO BREATHE
         String petId = ctx.getString("petId");
-        log.info("🗑️ Deleting pet ID: {}", petId);
+
+        // Give the API a significant pause to finish the 'Update' sync
+        log.info("⏳ Cooling down before deleting pet ID: {}", petId);
+        Thread.sleep(4000);
+
         Response r = petClient.deletePet(petId);
+
+        // If it still fails with 404, try ONE more time after another 3s
+        if (r.getStatusCode() == 404) {
+            log.warn("⚠️ Initial delete failed with 404, retrying final attempt...");
+            Thread.sleep(3000);
+            r = petClient.deletePet(petId);
+        }
+
         ctx.set("lastResponse", r);
     }
 
