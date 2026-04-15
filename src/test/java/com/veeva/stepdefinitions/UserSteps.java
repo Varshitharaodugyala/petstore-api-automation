@@ -116,21 +116,7 @@ public class UserSteps {
     // Single method handles both valid and invalid login
     @Then("the login should be {string}")
     public void validateLogin(String expectedResult) {
-        boolean isValid = createdUsername != null
-                && createdUsername.equals(loginUsername)
-                && createdPassword.equals(loginPassword);
-
-        switch (expectedResult.toLowerCase()) {
-            case "successful":
-                assertTrue("Login should be valid", isValid);
-                log.info("Login validated as successful → user: {}", loginUsername);
-                break;
-            case "invalid":
-                assertFalse("Login should be invalid", isValid);
-                log.info("Login validated as invalid → user: {}", loginUsername);
-                break;
-            default:
-                fail("Unknown login result type: " + expectedResult);
-        }
+        Response response = (Response) ctx.get("lastResponse");
+        AssertUtils.assertResponseType(response.getStatusCode(), expectedResult);
     }
 }

@@ -23,11 +23,15 @@ public class StoreSteps {
 
     @Given("I create an order")
     public void createOrder() {
-        int orderId = (int)(Math.random() * 100000);
+        // Generate the raw ID
+        long orderId = System.currentTimeMillis() % 100000;
+
+        // Call the Page method passing only raw values (Matching your PetSteps pattern)
         Response r = storeClient.createOrder(orderId, 10, 2);
+
         ctx.set("orderId", String.valueOf(orderId));
         ctx.set("lastResponse", r);
-        log.info("Created order id: {}", orderId);
+        log.info("Created order successfully for ID: {}", orderId);
     }
 
     @When("I fetch the created order by ID")
