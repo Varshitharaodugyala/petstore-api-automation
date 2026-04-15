@@ -47,7 +47,7 @@ public class PetSteps {
     @When("I create a pet with name {string} and status {string}")
     public void createPetStandard(String name, String status) {
         long id = System.currentTimeMillis() % 1000000;
-        log.info("🏗️ TC1: Creating standard pet: {} with status: {}", name, status);
+        log.info(" TC1: Creating standard pet: {} with status: {}", name, status);
         Response r = petClient.createPet(id, name, status);
         saveContext(r, name);
     }

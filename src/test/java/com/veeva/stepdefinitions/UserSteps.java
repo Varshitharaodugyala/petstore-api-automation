@@ -29,17 +29,13 @@ public class UserSteps {
     // Create user
     @When("I create a user with username {string} and email {string}")
     public void createUser(String username, String email) {
-        User user = new User();
-        user.setId(System.currentTimeMillis());
-        user.setUsername(username);
-        user.setFirstName("Test");
-        user.setLastName("User");
-        user.setEmail(email);
-        user.setPassword("password123");
-        user.setPhone("9999999999");
-        user.setUserStatus(1);
 
-        Response r = userClient.createUser(user);
+        long id = System.currentTimeMillis() % 1000000;
+
+        log.info("Creating user → username: {}, email: {}", username, email);
+
+        Response r = userClient.createUser(id, username, email);
+
         ctx.set("lastResponse", r);
         ctx.set("userCreateResponse", r);
         ctx.set("username", username);
@@ -47,7 +43,7 @@ public class UserSteps {
         this.createdUsername = username;
         this.createdPassword = "password123";
 
-        log.info("User created → username: {}, status: {}", username, r.getStatusCode());
+        log.info("User created successfully with status: {}", r.getStatusCode());
     }
 
     // Validate no server error

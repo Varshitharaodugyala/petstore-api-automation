@@ -2,10 +2,7 @@ package com.veeva.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-// POJO class representing Order object for Petstore Store APIs
-// Used for serialization (Java → JSON) when sending request
-// and deserialization (JSON → Java) when reading response
-// ignoreUnknown = true prevents failure if API response has extra fields
+// POJO class representing Order object for PetStore Store APIs
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Order {
 
@@ -46,11 +43,9 @@ public class Order {
     public String getShipDate() { return shipDate; }
     public void setShipDate(String shipDate) { this.shipDate = shipDate; }
 
-    // Getter and Setter for status
+    // Getter and Setter for status,complete
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-
-    // Getter and Setter for complete
     public boolean isComplete() { return complete; }
     public void setComplete(boolean complete) { this.complete = complete; }
 }

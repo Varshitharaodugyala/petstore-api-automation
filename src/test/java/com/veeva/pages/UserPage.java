@@ -11,11 +11,23 @@ import static io.restassured.RestAssured.given;
 
 public class UserPage extends BasePage {
     private static final Logger log = LogManager.getLogger(UserPage.class);
+    // create the user for the given username and the email
+    public Response createUser(long id, String username, String email) {
+        User user = new User();
+        user.setId(id);
+        user.setUsername(username);
+        user.setFirstName("Test");
+        user.setLastName("User");
+        user.setEmail(email);
+        user.setPassword("password123");
+        user.setPhone("9999999999");
+        user.setUserStatus(1);
+        log.info("Creating user: {}", username);
 
-    public Response createUser(User user) {
-        log.info("Creating user: {}", user.getUsername());
-
-        return given().spec(requestSpec).body(user).when().post("/user");
+        return given()
+                .spec(requestSpec)
+                .body(user)
+                .post("/user");
     }
     /*
      * This method sends GET request to fetch user details using username.

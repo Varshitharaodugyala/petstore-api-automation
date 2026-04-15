@@ -3,10 +3,8 @@ package com.veeva.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
-// POJO class representing Pet object used in Petstore APIs
-// Used for serialization (Java → JSON) while sending request
-// and deserialization (JSON → Java) while reading response
-// ignoreUnknown = true avoids failure if API response has extra fields
+// POJO class representing Pet object used in PetStore APIs
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Pet {
 
