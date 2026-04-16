@@ -160,4 +160,6 @@ The framework generates:
 
 Reports help in debugging and analyzing test execution results.   
 
+![Reports](docs/reports.png)
+
    
