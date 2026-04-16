@@ -19,7 +19,7 @@ public class StorePage extends BasePage {
         order.setStatus("placed");
         order.setComplete(true);
 
-        log.info("🏗️ Building and creating order ID: {}", id);
+        log.info("Building and creating order ID: {}", id);
 
         return given()
                 .spec(requestSpec)

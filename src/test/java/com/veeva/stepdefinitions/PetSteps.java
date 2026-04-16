@@ -15,7 +15,6 @@ public class PetSteps {
     private static final Logger log = LogManager.getLogger(PetSteps.class);
     private final PetPage petClient = new PetPage();
     private final ScenarioContext ctx;
-
     public PetSteps(ScenarioContext ctx) {
         this.ctx = ctx;
     }
@@ -29,9 +28,7 @@ public class PetSteps {
         if (r == null) return;
         ctx.set("lastResponse", r);
         ctx.set("petsResponse", r); // Syncing key for InventorySteps
-
         if (name != null && !name.isEmpty()) ctx.set("petName", name);
-
         try {
             Object id = r.jsonPath().get("id");
             if (id != null) {
@@ -75,7 +72,7 @@ public class PetSteps {
         for (int i = 0; i < 6; i++) { // Try for up to 18 seconds
             r = petClient.getPetById(petId);
             if (r.getStatusCode() == 200 && r.jsonPath().get("name") != null) break;
-            log.warn("⏳ Pet {} not ready, retrying (Attempt {})...", petId, i + 1);
+            log.warn(" Pet {} not ready, retrying (Attempt {})...", petId, i + 1);
             Thread.sleep(3000);
         }
         saveContext(r, r.jsonPath().getString("name"));
@@ -109,20 +106,16 @@ public class PetSteps {
     @When("I delete the pet")
     public void deletePet() throws InterruptedException {
         String petId = ctx.getString("petId");
-
         // Give the API a significant pause to finish the 'Update' sync
-        log.info("⏳ Cooling down before deleting pet ID: {}", petId);
+        log.info(" Cooling down before deleting pet ID: {}", petId);
         Thread.sleep(4000);
-
         Response r = petClient.deletePet(petId);
-
         // If it still fails with 404, try ONE more time after another 3s
         if (r.getStatusCode() == 404) {
-            log.warn("⚠️ Initial delete failed with 404, retrying final attempt...");
+            log.warn("Initial delete failed with 404, retrying final attempt...");
             Thread.sleep(3000);
             r = petClient.deletePet(petId);
         }
-
         ctx.set("lastResponse", r);
     }
 
@@ -139,7 +132,6 @@ public class PetSteps {
         // CRITICAL: Save to both keys so InventorySteps can see it
         ctx.set("lastResponse", r);
         ctx.set("petsResponse", r);
-
         List<Pet> list = r.jsonPath().getList("", Pet.class);
         ctx.set("petsByStatus", list);
         log.info("Fetched {} pets with status {}", list.size(), status);

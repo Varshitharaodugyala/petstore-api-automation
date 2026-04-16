@@ -2,33 +2,37 @@ package com.veeva.stepdefinitions;
 
 import com.veeva.pages.PetPage;
 import com.veeva.context.ScenarioContext;
+import com.veeva.utils.AssertUtils;
 import io.cucumber.java.en.*;
+
 import io.restassured.response.Response;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class NegativePetSteps {
     private final PetPage petPage = new PetPage();
     private final ScenarioContext ctx;
-
+    private static final Logger log = LogManager.getLogger(NegativePetSteps.class);
     public NegativePetSteps(ScenarioContext ctx) {
         this.ctx = ctx;
     }
-
     @Given("a pet does not exist with id {string}")
     public void checkNotExist(String id) {
         ctx.set("nonExistentPetId", id);
         Response checkResponse = petPage.getPetById(id);
-        if (checkResponse.getStatusCode() == 200) {
-            petPage.deletePet(id);
+        int statusCode = checkResponse.getStatusCode();
+        if (AssertUtils.isSuccessful(statusCode)) {
+            log.info("Pet with ID [{}] already exists in the system.", id);
+        } else {
+            log.info("Pet with ID [{}] does NOT exist. Safe to proceed.", id);
         }
     }
-
     @When("I send a GET request for the non-existing pet")
     public void sendGetNonExist() {
         String id = ctx.getString("nonExistentPetId");
         Response r = petPage.getPetById(id);
         ctx.set("lastResponse", r);
     }
-
     @When("I send a DELETE request for the non-existing pet")
     public void sendDeleteNonExist() {
         String id = ctx.getString("nonExistentPetId");

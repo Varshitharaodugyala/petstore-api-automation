@@ -16,7 +16,6 @@ public class BasePage {
     protected static final RequestSpecification requestSpec =
             new RequestSpecBuilder()
                     .setBaseUri(ConfigManager.getBaseUrl())
-
                     .setContentType(ContentType.JSON)
                     .addFilter(new RequestLoggingFilter())
                     .addFilter(new ResponseLoggingFilter())

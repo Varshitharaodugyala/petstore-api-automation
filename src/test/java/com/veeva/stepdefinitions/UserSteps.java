@@ -2,7 +2,6 @@ package com.veeva.stepdefinitions;
 
 import com.veeva.pages.UserPage;
 import com.veeva.context.ScenarioContext;
-import com.veeva.models.User;
 import com.veeva.utils.AssertUtils;
 import io.cucumber.java.en.*;
 import io.restassured.response.Response;
@@ -29,20 +28,14 @@ public class UserSteps {
     // Create user
     @When("I create a user with username {string} and email {string}")
     public void createUser(String username, String email) {
-
         long id = System.currentTimeMillis() % 1000000;
-
         log.info("Creating user → username: {}, email: {}", username, email);
-
         Response r = userClient.createUser(id, username, email);
-
         ctx.set("lastResponse", r);
         ctx.set("userCreateResponse", r);
         ctx.set("username", username);
-
         this.createdUsername = username;
         this.createdPassword = "password123";
-
         log.info("User created successfully with status: {}", r.getStatusCode());
     }
 

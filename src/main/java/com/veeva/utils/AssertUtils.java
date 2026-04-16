@@ -6,6 +6,9 @@ import org.apache.logging.log4j.Logger;
 
 public class AssertUtils {
     private static final Logger log = LogManager.getLogger(AssertUtils.class);
+    public static boolean isSuccessful(int statusCode) {
+        return statusCode == 200;
+    }
 
     public static void assertResponseType(int statusCode, String type) {
         log.info(" Validating response type: [{}] | Actual Status: [{}]", type, statusCode);

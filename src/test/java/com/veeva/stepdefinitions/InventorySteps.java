@@ -53,7 +53,7 @@ public class InventorySteps {
 
     @When("I fetch pets with status {string}")
     public void fetchinventoryPets(String status) {
-        log.info("🔎 Fetching pet list for status: {}", status);
+        log.info("Fetching pet list for status: {}", status);
         Response response = petClient.findPetsByStatus(status);
         ctx.set("lastResponse", response);
         ctx.set("petsResponse", response);
@@ -69,10 +69,8 @@ public class InventorySteps {
         if (response == null) {
             response = (Response) ctx.get("lastResponse");
         }
-
         assertNotNull(" Context Error: No response found! Check if 'I fetch pets' ran correctly.", response);
         AssertUtils.assertResponseType(response.getStatusCode(), "successful");
-
         List<?> pets = (List<?>) ctx.get("petsByStatus");
         assertNotNull("Context Error: Pets list was null!", pets);
         assertFalse(status + " pets list should not be empty", pets.isEmpty());
