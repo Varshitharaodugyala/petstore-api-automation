@@ -87,6 +87,7 @@ public class PetSteps {
 
     @And("I update the pet status from {string} to {string}")
     public void updateStatus(String from, String to) {
+        log.info("Initial pet status: {}", from);
         Response r = petClient.updatePet(
                 ctx.getString("petId"),
                 ctx.getString("petName"),
@@ -114,7 +115,7 @@ public class PetSteps {
     @Then("the response should be {string}")
     public void validateResponse(String type) {
         Response r = (Response) ctx.get("lastResponse");
-        AssertUtils.assertResponseType(r.getStatusCode(), "successful");
+        AssertUtils.assertResponseType(r.getStatusCode(),type);
     }
 
     @When("I fetch pets with status as {string}")

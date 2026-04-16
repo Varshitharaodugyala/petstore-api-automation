@@ -26,8 +26,7 @@ public class InventorySteps {
         this.ctx = ctx;
     }
 
-    //  fetch the count by INVENTORY
-
+    //  1)fetch the count by INVENTORY
     @When("I fetch the store inventory")
     public void fetchinventory() {
         Response response = storeClient.getInventory();
@@ -36,7 +35,7 @@ public class InventorySteps {
         ctx.set("inventoryMap", response.jsonPath().getMap("$"));
         log.info("Inventory fetched: {}", ctx.get("inventoryMap"));
     }
-
+    //check whether the response is successful
     @Then("the inventory response should be successful")
     public void validateInventoryStatus() {
         Response response = (Response) ctx.get("inventoryResponse");
