@@ -40,31 +40,21 @@ public class User {
     public long getId() { return id; }
     public void setId(long id) { this.id = id; }
 
-    // Getter and Setter for username
+    // Getter and Setter for username,firstName,lastName,email,password,phone,userStatus
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 
-    // Getter and Setter for firstName
+    // Getter and Setter for
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
-
-    // Getter and Setter for lastName
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
-
-    // Getter and Setter for email
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-
-    // Getter and Setter for password
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
-
-    // Getter and Setter for phone
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-
-    // Getter and Setter for userStatus
     public int getUserStatus() { return userStatus; }
     public void setUserStatus(int userStatus) { this.userStatus = userStatus; }
 }

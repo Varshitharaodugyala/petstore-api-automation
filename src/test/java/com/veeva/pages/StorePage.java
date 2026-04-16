@@ -18,9 +18,7 @@ public class StorePage extends BasePage {
         order.setQuantity(quantity);
         order.setStatus("placed");
         order.setComplete(true);
-
         log.info("Building and creating order ID: {}", id);
-
         return given()
                 .spec(requestSpec)
                 .body(order)

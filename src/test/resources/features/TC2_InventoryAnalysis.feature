@@ -18,7 +18,6 @@ Feature: TC2 - Inventory Analysis (Dynamic and Reusable)
   Scenario Outline: Compare inventory and pet counts
     Given the petstore API is available
     When I fetch the store inventory
-    # 🔎 THIS LINE BELOW IS LIKELY MISSING OR OUT OF ORDER
     When I fetch pets with status as "<status>"
     Then the pets response should be successful and "<status>" pets list should not be empty
     And the pet counts for "<status>" should approximately match

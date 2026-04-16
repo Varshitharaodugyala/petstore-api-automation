@@ -23,7 +23,6 @@ public class UserPage extends BasePage {
         user.setPhone("9999999999");
         user.setUserStatus(1);
         log.info("Creating user: {}", username);
-
         return given()
                 .spec(requestSpec)
                 .body(user)
@@ -31,8 +30,7 @@ public class UserPage extends BasePage {
     }
     /*
      * This method sends GET request to fetch user details using username.
-     * Username is passed as path parameter which replaces {username}
-     * in the endpoint URL.
+     * Username is passed as path parameter which replaces {username} in the endpoint URL.
      */
     public Response getUserByUsername(String username) {
         log.info("Fetching user: {}", username);

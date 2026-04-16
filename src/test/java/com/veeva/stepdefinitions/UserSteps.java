@@ -8,18 +8,11 @@ import io.restassured.response.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static org.junit.Assert.*;
-
 public class UserSteps {
 
     private static final Logger log = LogManager.getLogger(UserSteps.class);
     private final UserPage userClient = new UserPage();
     private final ScenarioContext ctx;
-
-    private String createdUsername;
-    private String createdPassword;
-    private String loginUsername;
-    private String loginPassword;
 
     public UserSteps(ScenarioContext ctx) {
         this.ctx = ctx;
@@ -33,9 +26,11 @@ public class UserSteps {
         Response r = userClient.createUser(id, username, email);
         ctx.set("lastResponse", r);
         ctx.set("userCreateResponse", r);
+
+        // store correct credentials
         ctx.set("username", username);
-        this.createdUsername = username;
-        this.createdPassword = "password123";
+        ctx.set("password", "password123");
+        AssertUtils.assertResponseType(r.getStatusCode(), "successful");
         log.info("User created successfully with status: {}", r.getStatusCode());
     }
 
@@ -45,11 +40,12 @@ public class UserSteps {
         Response r = (Response) ctx.get("userCreateResponse");
         int statusCode = r.getStatusCode();
         log.info("User creation status: {}", statusCode);
-        assertNotEquals("Should not return 500 server error", 500, statusCode);
-        assertTrue("Status should be < 500", statusCode < 500);
+        if (statusCode >= 500) {
+            throw new AssertionError("Server error occurred: " + statusCode);
+        }
     }
 
-    // Fetch user and validate message in single method
+    // Fetch user
     @When("I request a user with username {string}")
     public void requestUser(String username) {
         Response r = userClient.getUserByUsername(username);
@@ -58,24 +54,25 @@ public class UserSteps {
         log.info("Fetching user '{}' → status: {}", username, r.getStatusCode());
     }
 
-    // Single method handles both fetch and message validation
+    // Validate message
     @Then("the response message should contain {string}")
     public void responseMessage(String expected) {
         Response r = (Response) ctx.get("getUserResponse");
-        int statusCode = r.getStatusCode();
         String message = r.jsonPath().getString("message");
-        log.info("Response status: {}, message: {}", statusCode, message);
-        assertTrue("Message should contain: " + expected,
-                message != null && message.contains(expected));
+        log.info("Response message: {}", message);
+        if (message == null || !message.contains(expected)) {
+            throw new AssertionError(
+                    "Expected message to contain: " + expected + " but got: " + message);
+        }
         log.info("Validated message contains '{}'", expected);
     }
 
-    // Validate status code is 404
+    // Validate not found
     @Then("the user response should be not found")
     public void userResponseShouldBeNotFound() {
         Response r = (Response) ctx.get("getUserResponse");
         AssertUtils.assertResponseType(r.getStatusCode(), "not found");
-        log.info("Verified response is 404 Not Found");
+        log.info("Verified response is Not Found");
     }
 
     // Login
@@ -84,28 +81,39 @@ public class UserSteps {
         Response r = userClient.login(username, password);
         ctx.set("lastResponse", r);
         ctx.set("loginResponse", r);
-        this.loginUsername = username;
-        this.loginPassword = password;
+
+        // store entered credentials
+        ctx.set("loginUsername", username);
+        ctx.set("loginPassword", password);
         log.info("Login attempt → user: {}, status: {}", username, r.getStatusCode());
     }
 
-    // Validate login token behavior
-    @Then("the login response should not contain a valid session token")
-    public void loginToken() {
-        Response r = (Response) ctx.get("loginResponse");
-        int statusCode = r.getStatusCode();
-        String body = r.getBody().asString();
-        log.info("Login response → status: {}, body: {}", statusCode, body);
-        assertTrue("Login should not return server error", statusCode < 500);
-        if (body != null && body.contains("logged in user session")) {
-            log.warn("Petstore API returned session token even for invalid login (known issue)");
-        }
-    }
-
-    // Single method handles both valid and invalid login
+    // Validate login (valid + invalid in one method)
     @Then("the login should be {string}")
     public void validateLogin(String expectedResult) {
         Response response = (Response) ctx.get("lastResponse");
-        AssertUtils.assertResponseType(response.getStatusCode(), expectedResult);
+        String correctUser = ctx.getString("username");
+        String correctPass = ctx.getString("password");
+        String enteredUser = ctx.getString("loginUsername");
+        String enteredPass = ctx.getString("loginPassword");
+        boolean isValid =
+                correctUser.equals(enteredUser) &&
+                        correctPass.equals(enteredPass);
+        if (expectedResult.equalsIgnoreCase("successful")) {
+            if (!isValid) {
+                throw new AssertionError("Expected valid login but credentials did not match");
+            }
+            AssertUtils.assertResponseType(response.getStatusCode(), "successful");
+
+        } else if (expectedResult.equalsIgnoreCase("invalid")) {
+            if (isValid) {
+                throw new AssertionError("Expected invalid login but credentials matched");
+            }
+            AssertUtils.assertResponseType(response.getStatusCode(), "invalid");
+
+        } else {
+            throw new IllegalArgumentException("Unknown expected result: " + expectedResult);
+        }
+        log.info("Login validation completed → expected: {}", expectedResult);
     }
 }
