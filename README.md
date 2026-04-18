@@ -11,7 +11,6 @@ API Test Automation framework for Swagger Petstore using Java, REST Assured, and
 | Maven | Build tool |
 | Log4J 2 | Logging |
 | Jackson | JSON serialization |
-| JavaFaker | Dynamic test data |
 | JUnit 4 | Test runner |
 
 ## Project Structure
@@ -165,5 +164,8 @@ The framework generates:
 Reports help in debugging and analyzing test execution results.   
 
 ![Reports](docs/reports.png)
+
+## Author
+**Varshitha Dugyala**
 
    
