@@ -125,6 +125,10 @@ environment variables before attempting to run the project.
  
  6)Optionally, you can run the test runner class directly from the IDE to execute specific scenarios during development.
 
+ ## Architecture
+
+ ![ArchectureDiagram](docs/Architecturediagram.png)
+
 
 
 ### API Reference
