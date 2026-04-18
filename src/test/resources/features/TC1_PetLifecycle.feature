@@ -25,6 +25,7 @@ Feature: TC1 - The Lifecycle of a Pet (CRUD and Chaining)
       | Whiskers |
 
   # Negative — fetch non-existing pet with valid and invalid ids
+
   Scenario Outline: Fetch non-existing pet with invalid id
     Given a pet does not exist with id "<id>"
     When I send a GET request for the non-existing pet

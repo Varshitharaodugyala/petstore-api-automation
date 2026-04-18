@@ -40,9 +40,7 @@ public class UserSteps {
         Response r = (Response) ctx.get("userCreateResponse");
         int statusCode = r.getStatusCode();
         log.info("User creation status: {}", statusCode);
-        if (statusCode >= 500) {
-            throw new AssertionError("Server error occurred: " + statusCode);
-        }
+        AssertUtils.assertResponseType(r.getStatusCode(), "no server error");
     }
 
     // Fetch user

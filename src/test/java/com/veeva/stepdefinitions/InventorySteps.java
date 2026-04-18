@@ -17,11 +17,9 @@ import io.restassured.response.Response;
 
 // Step Definition class for Inventory related scenarios
 public class InventorySteps {
-
     private static final Logger log = LogManager.getLogger(InventorySteps.class);
     private final StorePage storeClient = new StorePage();
     private final ScenarioContext ctx;
-
     public InventorySteps(ScenarioContext ctx) {
         this.ctx = ctx;
     }
@@ -41,7 +39,6 @@ public class InventorySteps {
         Response response = (Response) ctx.get("inventoryResponse");
         assertNotNull("Response should not be null", response);
         AssertUtils.assertResponseType(response.getStatusCode(), "successful");
-        //  merged inventory validation
          Map<String, Integer> inventory = (Map<String, Integer>) ctx.get("inventoryMap");
          assertNotNull("Inventory should not be null", inventory);
          assertFalse("Inventory should not be empty", inventory.isEmpty());
@@ -61,7 +58,7 @@ public class InventorySteps {
     }
 
     // response + list validation
-    @Then("the pets response should be successful and {string} pets list should not be empty")
+    @Then("the response should be successful and {string} list should not be empty")
     public void validatePetsResponseAndList(String status) {
         // Check both possible keys to ensure we find the response
         Response response = (Response) ctx.get("petsResponse");

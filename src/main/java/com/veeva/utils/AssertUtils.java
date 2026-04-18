@@ -35,6 +35,12 @@ public class AssertUtils {
                         statusCode == 400 || statusCode == 403 || statusCode == 200);
                 break;
 
+            case "no server error":
+                if (statusCode >= 500) {
+                    throw new AssertionError("Expected no server error but got: " + statusCode);
+                }
+                break;
+
             default:
                 log.error("Unknown validation type requested: {}", type);
                 fail("Unknown response type: " + type);

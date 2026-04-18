@@ -20,15 +20,17 @@ public class Hooks {
         this.scenarioContext = scenarioContext;
     }
 
-    // Runs before every scenario execution
-    // Used here to print scenario start log
+    /*Runs before every scenario execution
+     Used here to print scenario start log
+     */
     @Before
     public void setUp(Scenario scenario) {
         log.info("===== Starting: {} =====", scenario.getName());
     }
 
-    // Runs after every scenario execution
-    // Clears stored test data and prints scenario status
+    /* Runs after every scenario execution
+    Clears stored test data and prints scenario status
+    */
     @After
     public void tearDown(Scenario scenario) {
         scenarioContext.clear();
