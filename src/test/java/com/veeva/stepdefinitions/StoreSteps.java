@@ -17,7 +17,7 @@ public class StoreSteps {
     public StoreSteps(ScenarioContext ctx) {
         this.ctx = ctx;
     }
-
+    // creating an order using createOrder function from StorePage
     @Given("I create an order")
     public void createOrder() {
         long orderId = System.currentTimeMillis() % 100000;
@@ -27,7 +27,7 @@ public class StoreSteps {
         AssertUtils.assertResponseType(r.getStatusCode(), "successful");
         log.info("Created order successfully for ID: {}", orderId);
     }
-
+    // fetching the created order
     @When("I fetch the created order by ID")
     public void fetchOrder() {
         String orderId = (String) ctx.get("orderId");
@@ -36,7 +36,7 @@ public class StoreSteps {
         AssertUtils.assertResponseType(r.getStatusCode(), "successful");
         log.info("Fetched order successfully for ID: {}", orderId);
     }
-
+    // deleting the created order
     @When("I delete the created order by ID")
     public void deleteOrder() {
         String orderId = (String) ctx.get("orderId");
@@ -45,7 +45,7 @@ public class StoreSteps {
         AssertUtils.assertResponseType(r.getStatusCode(), "successful");
         log.info("Deleted order id: {} returned status: {}", orderId, r.getStatusCode());
     }
-
+    // verifying order is deleted successfully
     @Then("the order should be deleted successfully")
     public void verifyOrderDeleted() {
         String orderId = (String) ctx.get("orderId");

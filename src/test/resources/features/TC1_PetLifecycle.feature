@@ -36,6 +36,7 @@ Feature: TC1 - The Lifecycle of a Pet (CRUD and Chaining)
       | abdec          |
       | 12.5           |
       | 999945998799999 |
+      | 34567899988999  |
 
   # Negative — delete non-existing pet
   Scenario Outline: Delete non-existing pet returns error

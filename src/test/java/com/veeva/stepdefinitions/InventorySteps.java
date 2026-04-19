@@ -39,6 +39,7 @@ public class InventorySteps {
         Response response = (Response) ctx.get("inventoryResponse");
         assertNotNull("Response should not be null", response);
         AssertUtils.assertResponseType(response.getStatusCode(), "successful");
+        @SuppressWarnings("unchecked")
          Map<String, Integer> inventory = (Map<String, Integer>) ctx.get("inventoryMap");
          assertNotNull("Inventory should not be null", inventory);
          assertFalse("Inventory should not be empty", inventory.isEmpty());
@@ -70,10 +71,11 @@ public class InventorySteps {
         assertFalse(status + " pets list should not be empty", pets.isEmpty());
     }
 
-    //  COUNT COMPARISON
+    //  COUNT COMPARISON WITH A TOLERANCE
 
     @Then("the pet counts for {string} should approximately match")
     public void compareCounts(String status) {
+        @SuppressWarnings("unchecked")
         Map<String, Integer> inventory = (Map<String, Integer>) ctx.get("inventoryMap");
         List<?> pets = (List<?>) ctx.get("petsByStatus");
         int inventoryCount = inventory.getOrDefault(status, 0);

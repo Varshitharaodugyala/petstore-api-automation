@@ -25,7 +25,7 @@ public class ConfigManager {
     // Method to return Base URL value from properties file
     public static String getBaseUrl() {
         String url = properties.getProperty("baseUrl");
-        System.out.println("🔥 Base URL = " + url);
+        System.out.println("Base URL = " + url);
         return url;
     }
 }

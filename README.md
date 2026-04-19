@@ -5,7 +5,7 @@ API Test Automation framework for Swagger Petstore using Java, REST Assured, and
 ## Tech Stack
 | Tool | Purpose |
 |------|---------|
-| Java 11 | Programming language |
+| Java  | Programming language |
 | REST Assured 5.4 | API testing library |
 | Cucumber 7.15 | BDD framework |
 | Maven | Build tool |
@@ -63,10 +63,9 @@ petstore-api-automation/
 
 ```
 
-##  Prerequisites
-
-- Java 11+
-- Maven 3+
+## Prerequisites
+- Java 17 (tested on OpenJDK 17.0.18)
+- Maven 3.9.13
 - IntelliJ IDEA
 - Internet connection (for API calls)
 
@@ -109,21 +108,21 @@ petstore-api-automation/
 
 ```
 ### How to Run the Project
+  1)Ensure that Java 17 and Maven 3.9+ are installed on your system and properly configured in the environment variables before attempting to run the project.
 
- 1)Ensure that Java (version 8 or above) and Maven are installed on your system and properly configured in the 
-environment variables before attempting to run the project.
+  2)Clone the repository using
+git clone https://github.com/Varshitharaodugyala/petstore-api-automation.git
+and navigate into the project directory.
 
- 2)Clone the repository using git clone https://github.com/Varshitharaodugyala/petstore-api-automation.git
- and navigate into the project directory.
- 
- 3)Open the project in IntelliJ IDEA or any preferred IDE and allow Maven to download all required dependencies from the pom.xml file.
- 
- 4)Execute the command mvn clean test from the project root directory to build the project and run all Cucumber test scenarios.
- 
- 5)After execution, verify the results by opening the generated Surefire reports located in the target/surefire-reports folder.
- 
- 6)Optionally, you can run the test runner class directly from the IDE to execute specific scenarios during development.
+  3)Open the project in IntelliJ IDEA or any preferred IDE and allow Maven to download all required dependencies from the pom.xml file.
 
+  4)Execute the command
+mvn clean test
+from the project root directory to build the project and run all Cucumber test scenarios.
+
+  5)After execution, verify the results by opening the generated reports located in the target/surefire-reports folder.
+
+  6)Optionally, you can run the test runner class directly from the IDE to execute specific scenarios during development.
  ## Architecture
 
  ![ArchectureDiagram](docs/Architecturediagram.png)

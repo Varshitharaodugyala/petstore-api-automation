@@ -7,6 +7,7 @@ import java.util.Collections;
 import static io.restassured.RestAssured.given;
 
 public class PetPage extends BasePage {
+    // creating the pet
     public Response createPet(long id, String name, String status) {
         Pet pet = new Pet();
         pet.setId(id);
@@ -17,6 +18,7 @@ public class PetPage extends BasePage {
                 .body(pet)
                 .post("/pet");
     }
+    // creating the pet with category
     public Response createPetWithCategory(long id, String name, String status, String catName) {
         Pet pet = new Pet();
         pet.setId(id);
@@ -28,7 +30,7 @@ public class PetPage extends BasePage {
                 .body(pet)
                 .post("/pet");
     }
-
+    // updating the pet status
     public Response updatePet(String id, String name, String status) {
         Pet pet = new Pet();
         pet.setId(Long.parseLong(id));
@@ -39,27 +41,28 @@ public class PetPage extends BasePage {
                 .body(pet)
                 .put("/pet");
     }
-
+    // fetching the pet by id (works for both valid and invalid ids)
     public Response getPetById(String petId) {
         return given().spec(requestSpec)
                 .pathParam("petId", petId)
                 .get("/pet/{petId}");
     }
-
+    // deleting the pet by id (works for both valid and invalid ids)
     public Response deletePet(String petId) {
         return given().spec(requestSpec)
                 .pathParam("petId", petId)
                 .delete("/pet/{petId}");
     }
-
+   // finding the pets by status
     public Response findPetsByStatus(String status) {
         return given().spec(requestSpec)
                 .queryParam("status", status)
                 .get("/pet/findByStatus");
     }
+    // adding a retry method as the swagger is public api cannot be updated very fast
     public Response getPetByIdWithRetry(String petId) {
         Response r = null;
-        for (int i = 0; i < 5; i++) {   // max 5 attempts
+        for (int i = 0; i < 3; i++) {   // max 5 attempts
             r = getPetById(petId);
             if (r != null && r.getStatusCode() == 200
                     && r.jsonPath().get("name") != null) {
@@ -73,9 +76,10 @@ public class PetPage extends BasePage {
         }
         return r;
     }
+    // adding a retry method as the swagger is public api cannot be updated very fast
     public Response waitUntilPetDeleted(String petId) {
         Response r = null;
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 3; i++) {
             r = getPetById(petId);
             if (r.getStatusCode() == 404) {
                 return r;

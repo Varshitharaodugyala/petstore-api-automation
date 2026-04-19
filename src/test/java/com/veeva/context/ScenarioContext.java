@@ -17,7 +17,7 @@ public class ScenarioContext {
     public Object get(String key) {
         Object value = context.get(key);
         if (value == null) {
-            log.error("❌ CONTEXT ERROR: Key [{}] not found! Current keys: {}", key, context.keySet());
+            log.error(" CONTEXT ERROR: Key [{}] not found! Current keys: {}", key, context.keySet());
         }
         return value;
     }
@@ -32,13 +32,13 @@ public class ScenarioContext {
         Object val = get(key);
         return (val == null) ? "" : String.valueOf(val);
     }
-    /*
+    /* its never used
     public int getInt(String key) {
         Object val = get(key);
         if (val == null) return 0;
         return ((Number) val).intValue();
-    }
-   */
+    }*/
+
     public void clear() {
         log.debug(" CONTEXT CLEARED");
         context.clear();

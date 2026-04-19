@@ -86,40 +86,32 @@ public class UserSteps {
         log.info("Login attempt → user: {}, status: {}", username, r.getStatusCode());
     }
 
-    // Validate login (valid + invalid in one method)
+   //Validate login (valid + invalid in one method)
     @Then("the login should be {string}")
     public void validateLogin(String expectedResult) {
-
-        Response response = (Response) ctx.get("loginResponse");
-        int statusCode = response.getStatusCode();
-        String message = response.jsonPath().getString("message");
-
-        log.info("Login response → status: {}, message: {}", statusCode, message);
-
+        Response response = (Response) ctx.get("lastResponse");
+        String correctUser = ctx.getString("username");
+        String correctPass = ctx.getString("password");
+        String enteredUser = ctx.getString("loginUsername");
+        String enteredPass = ctx.getString("loginPassword");
+        boolean isValid =
+                correctUser.equals(enteredUser) &&
+                        correctPass.equals(enteredPass);
         if (expectedResult.equalsIgnoreCase("successful")) {
-
-            // ✅ Check API response
-            AssertUtils.assertResponseType(statusCode, "successful");
-
-            if (message == null || !message.toLowerCase().contains("logged in")) {
-                throw new AssertionError("Expected successful login message but got: " + message);
+            if (!isValid) {
+                throw new AssertionError("Expected valid login but credentials did not match");
             }
+            AssertUtils.assertResponseType(response.getStatusCode(), "successful");
 
         } else if (expectedResult.equalsIgnoreCase("invalid")) {
-
-            // ❗ IMPORTANT: Petstore API BUG
-            // It returns 200 even for wrong credentials
-
-            if (message != null && message.toLowerCase().contains("logged in")) {
-                throw new AssertionError("Expected login failure but got success message: " + message);
+            if (isValid) {
+                throw new AssertionError("Expected invalid login but credentials matched");
             }
-
-            log.info("Invalid login verified (no valid session message)");
+            AssertUtils.assertResponseType(response.getStatusCode(), "invalid");
 
         } else {
             throw new IllegalArgumentException("Unknown expected result: " + expectedResult);
         }
-
         log.info("Login validation completed → expected: {}", expectedResult);
     }
 }

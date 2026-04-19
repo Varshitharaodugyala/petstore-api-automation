@@ -16,7 +16,7 @@ public class NegativePetSteps {
     public NegativePetSteps(ScenarioContext ctx) {
         this.ctx = ctx;
     }
-    //checking whether a pet doesn't exist with invalid id
+    //checking whether a pet doesn't exist with invalid id ,if exists throwing an error
     @Given("a pet does not exist with id {string}")
     public void checkNotExist(String id) {
         ctx.set("nonExistentPetId", id);
@@ -36,7 +36,7 @@ public class NegativePetSteps {
         Response r = petPage.getPetById(id);
         ctx.set("lastResponse", r);
     }
-
+    // sending delete request for non existing pet
     @When("I send a DELETE request for the non-existing pet")
     public void sendDeleteNonExist() {
         String id = ctx.getString("nonExistentPetId");
