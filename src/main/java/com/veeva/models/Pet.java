@@ -7,20 +7,10 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Pet {
-
-    // Unique id of the pet
     private long id;
-
-    // Nested Category object inside Pet
     private Category category;
-
-    // Name of the pet
     private String name;
-
-    // List of photo URLs required by API
     private List<String> photoUrls;
-
-    // Status of pet (available / pending / sold)
     private String status;
 
     // Default constructor required for deserialization

@@ -10,14 +10,15 @@ Feature: TC4 - Cross-Endpoint Data Consistency
     Then the pet should be created successfully
     When I update the pet status from "available" to "sold"
     Then the response should be "successful"
+    And I fetch the store inventory
     When I fetch pets with status "sold"
     Then the created pet ID should be found in the sold pets list
 
     Examples:
       | petName           | category          |
-      | HighValue-Bulldog | HighValue-Bulldog |
-      | RareCat           | Exotic            |
-      | GoldenRetriever   | Premium           |
+      | HighValue-Bulldog | dog               |
+      | RareCat           | cat               |
+      | GoldenRetriever   | dog               |
 
   # Store order — create and retrieve
   Scenario: Place an order successfully

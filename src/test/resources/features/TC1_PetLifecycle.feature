@@ -32,11 +32,10 @@ Feature: TC1 - The Lifecycle of a Pet (CRUD and Chaining)
     Then the response should be "not found"
 
     Examples:
-      | id           |
-      | 999999       |
-      | abc          |
-      | 12.5         |
-      | 999999999999 |
+      | id             |
+      | abdec          |
+      | 12.5           |
+      | 999945998799999 |
 
   # Negative — delete non-existing pet
   Scenario Outline: Delete non-existing pet returns error
@@ -46,12 +45,12 @@ Feature: TC1 - The Lifecycle of a Pet (CRUD and Chaining)
 
     Examples:
       | invalidId |
-      | 999999    |
-      | -1        |
-      | 0         |
-      | 1.5       |
-      | abc       |
-      | @@@       |
+      | 9999899    |
+      | -1         |
+      | 0          |
+      | 1.5        |
+      | abdec      |
+      | @@@        |
 
   # Positive — delete existing pet and verify 404
   Scenario: Delete an existing pet successfully

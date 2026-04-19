@@ -38,8 +38,7 @@ public class UserPage extends BasePage {
     }
     /*
      * This method performs login operation using username and password.
-     * Login API requires credentials to be sent as query parameters.
-     * Example: /user/login?username=john&password=1234
+     * Login API requires credentials to be sent as query parameters. eg: /user/login?username=john&password=1234
      */
 
     public Response login(String username, String password) {

@@ -21,26 +21,26 @@ public class ScenarioContext {
         }
         return value;
     }
-
+    /**
     public long getLong(String key) {
         Object val = get(key);
         if (val == null) return 0L;
         return ((Number) val).longValue();
-    }
+    }*/
 
     public String getString(String key) {
         Object val = get(key);
         return (val == null) ? "" : String.valueOf(val);
     }
-
+    /*
     public int getInt(String key) {
         Object val = get(key);
         if (val == null) return 0;
         return ((Number) val).intValue();
     }
-
+   */
     public void clear() {
-        log.debug("🧹 CONTEXT CLEARED");
+        log.debug(" CONTEXT CLEARED");
         context.clear();
     }
 }

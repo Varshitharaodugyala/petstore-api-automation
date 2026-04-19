@@ -16,7 +16,7 @@ public class NegativePetSteps {
     public NegativePetSteps(ScenarioContext ctx) {
         this.ctx = ctx;
     }
-
+    //checking whether a pet doesn't exist with invalid id
     @Given("a pet does not exist with id {string}")
     public void checkNotExist(String id) {
         ctx.set("nonExistentPetId", id);
@@ -24,11 +24,12 @@ public class NegativePetSteps {
         int statusCode = checkResponse.getStatusCode();
         if (AssertUtils.isSuccessful(statusCode)) {
             log.info("Pet with ID [{}] already exists in the system.", id);
+            throw new AssertionError("Test data invalid: Pet already exists with ID " + id);
         } else {
             log.info("Pet with ID [{}] does NOT exist. Safe to proceed.", id);
         }
     }
-
+    // fetching a pet which is doesn't exist
     @When("I send a GET request for the non-existing pet")
     public void sendGetNonExist() {
         String id = ctx.getString("nonExistentPetId");

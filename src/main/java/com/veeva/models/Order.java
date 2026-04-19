@@ -5,23 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 // POJO class representing Order object for PetStore Store APIs
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Order {
-
-    // Unique order id
     private long id;
-
-    // ID of the pet being ordered
     private long petId;
-
-    // Quantity of pets in the order
     private int quantity;
-
-    // Shipping date of the order
     private String shipDate;
-
-    // Order status (placed, approved, delivered)
     private String status;
-
-    // Indicates if order is fully processed
     private boolean complete;
 
     // Default constructor required for JSON → Java conversion

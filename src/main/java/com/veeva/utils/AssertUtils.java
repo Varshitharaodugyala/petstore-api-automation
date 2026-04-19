@@ -9,7 +9,7 @@ public class AssertUtils {
     public static boolean isSuccessful(int statusCode) {
         return statusCode == 200;
     }
-
+    // checking the responses
     public static void assertResponseType(int statusCode, String type) {
         log.info(" Validating response type: [{}] | Actual Status: [{}]", type, statusCode);
 
@@ -22,12 +22,20 @@ public class AssertUtils {
                 break;
 
             case "not found":
-                // Added 200 check because PetStore sometimes returns 200 with "User not found" message
-                boolean isNotFound = (statusCode == 404 || statusCode == 400 || statusCode == 200);
-                if (!isNotFound) {
-                    log.error("Expected a 'Not Found' state (404/400) but got: {}", statusCode);
+                log.info("Validating NOT FOUND scenario | Actual Status: [{}]", statusCode);
+
+                if (statusCode == 404 || statusCode == 400) {
+                    assertTrue(true);
                 }
-                assertTrue("Expected 404/400/200(error body) but got: " + statusCode, isNotFound);
+                else if (statusCode == 200) {
+                    // 200 is NOT acceptable for this test
+                    log.error("Received 200 OK for NOT FOUND scenario — this is incorrect");
+                    fail("Expected 404/400 but got 200 OK");
+                }
+                else {
+                    log.error("Unexpected status code for NOT FOUND: {}", statusCode);
+                    fail("Expected 404/400 but got: " + statusCode);
+                }
                 break;
 
             case "invalid":
